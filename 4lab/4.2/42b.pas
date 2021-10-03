@@ -31,7 +31,7 @@ BEGIN {SarahRevere}
             IF W4 = 'd'
             THEN {'land' найдено}
               Looking := 'L';
-       {Проверка окна для 'sea'}
+      {Проверка окна для 'sea'}
       IF W2 = 's'
       THEN
         IF W3 = 'e'
@@ -40,7 +40,7 @@ BEGIN {SarahRevere}
           THEN {'sea' найдено}
              Looking := 'S'
     END;
-  WRITELN(Looking)       
+  WRITELN('Looking is ', Looking)
 END. {Sarah revere}
 
 

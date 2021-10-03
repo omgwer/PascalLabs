@@ -21,11 +21,8 @@ BEGIN {SarahRevere}
       IF W4 = '#'
       THEN {Конец данных}
         Looking := 'N';
-      WRITELN(W1, W2, W3, W4); 
-    END;
-     {Проверка окна для 'land'}
-     {Проверка окна для 'sea'}
-     {создать сообщение Sarah}
+      WRITELN(W1, W2, W3, W4); {Проверяем движение окна}
+    END;    
 END. {Sarah revere}
 
 

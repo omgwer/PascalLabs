@@ -1,5 +1,5 @@
 PROGRAM SarahRevere(INPUT, OUTPUT);
-{Печать сообщения о том как идут британцы, в зависимости 
+{Печать сообщения о том как идут британцы, в зависимости
 от того, первым во входе встречается 'land' или 'sea'.}
 VAR
   W1, W2, W3, W4, Looking: CHAR;
@@ -20,7 +20,7 @@ BEGIN {SarahRevere}
       READ(W4);
       IF W4 = '#'
       THEN {Конец данных}
-        Looking := 'N';       
+        Looking := 'N';
       {Проверка окна для  'land'}
       IF W1 = 'l'
       THEN
@@ -30,8 +30,8 @@ BEGIN {SarahRevere}
           THEN
             IF W4 = 'd'
             THEN {'land' найдено}
-              Looking := 'L'
-       {Проверка окна для 'sea'}
+              Looking := 'L';
+      {Проверка окна для 'sea'}
       IF W2 = 's'
       THEN
         IF W3 = 'e'
@@ -39,8 +39,8 @@ BEGIN {SarahRevere}
           IF W4 = 'a'
           THEN {'sea' найдено}
              Looking := 'S'
-    END;     
-     {создать сообщение Sarah}
+    END;
+  WRITELN('Looking is ',Looking)       
 END. {Sarah revere}
 
 
