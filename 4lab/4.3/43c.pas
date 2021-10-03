@@ -10,17 +10,10 @@ BEGIN {SarahRevere}
     W3 := ' ';
     W4 := ' ';
     Looking := 'Y'
-  END;
+  END;	
   WHILE Looking = 'Y'
   DO
     BEGIN {Двигать окно, проверять конец данных}
-      W1 := W2;
-      W2 := W3;
-      W3 := W4;
-      READ(W4);
-      IF W4 = '#'
-      THEN {Конец данных}
-        Looking := 'N';
       {Проверка окна для  'land'}
       IF W1 = 'l'
       THEN
@@ -32,13 +25,32 @@ BEGIN {SarahRevere}
             THEN {'land' найдено}
               Looking := 'L';
       {Проверка окна для 'sea'}
-      IF W2 = 's'
+      IF W1 = 's'
       THEN
-        IF W3 = 'e'
+        IF W2 = 'e'
         THEN
-          IF W4 = 'a'
+          IF W3 = 'a'
           THEN {'sea' найдено}
-             Looking := 'S'
+	    Looking := 'S';           
+      IF Looking = 'Y' {Вводим дополнительное сравнение с переменной Looking для избежания перезаписи}
+      THEN
+        BEGIN
+          W1 := W2;
+          W2 := W3;
+          W3 := W4;
+          READ(W4);
+          IF W4 = '#'		  
+          THEN {Конец данных}
+            IF W3 = 'a'
+            THEN
+              IF W2 = 'e'
+              THEN
+                IF W1 = 's'
+                THEN		
+          ELSE
+            Looking := 'N'
+        END;
+     WRITELN(W1, W2, W3, W4, ' ', Looking)
     END;
   IF Looking = 'L'
   THEN

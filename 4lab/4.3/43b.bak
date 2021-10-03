@@ -32,13 +32,14 @@ BEGIN {SarahRevere}
             THEN {'land' найдено}
               Looking := 'L';
       {Проверка окна для 'sea'}
-      IF W2 = 's'
+      IF W1 = 's'
       THEN
-        IF W3 = 'e'
+        IF W2 = 'e'
         THEN
-          IF W4 = 'a'
+          IF W3 = 'a'
           THEN {'sea' найдено}
              Looking := 'S'
+      WRITELN(W1, W2, W3, W4, '  ', Looking);
     END;
   IF Looking = 'L'
   THEN

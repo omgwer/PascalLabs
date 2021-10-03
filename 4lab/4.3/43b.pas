@@ -20,7 +20,9 @@ BEGIN {SarahRevere}
       READ(W4);
       IF W4 = '#'
       THEN {Конец данных}
-        Looking := 'N';
+        BEGIN
+          Looking := 'N';          
+        END;
       {Проверка окна для  'land'}
       IF W1 = 'l'
       THEN
@@ -32,13 +34,13 @@ BEGIN {SarahRevere}
             THEN {'land' найдено}
               Looking := 'L';
       {Проверка окна для 'sea'}
-      IF W2 = 's'
+      IF W1 = 's'
       THEN
-        IF W3 = 'e'
+        IF W2 = 'e'
         THEN
-          IF W4 = 'a'
+          IF W3 = 'a'
           THEN {'sea' найдено}
-             Looking := 'S'
+             Looking := 'S';      
     END;
   IF Looking = 'L'
   THEN
