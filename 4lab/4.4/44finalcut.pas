@@ -20,9 +20,7 @@ BEGIN {SarahRevere}
       READ(W4);
       IF W4 = '#'
       THEN {Конец данных}
-        BEGIN
-          Looking := 'N'          
-        END;
+        Looking := 'N';
       {Проверка окна для  'land'}
       IF W1 = 'l'
       THEN
@@ -34,21 +32,33 @@ BEGIN {SarahRevere}
             THEN {'land' найдено}
               Looking := 'L';
       {Проверка окна для 'sea'}
-      IF W1 = 's'
+      IF W2 = 's'
       THEN
-        IF W2 = 'e'
+        IF W3 = 'e'
         THEN
-          IF W3 = 'a'
+          IF W4 = 'a'
           THEN {'sea' найдено}
-             Looking := 'S';      
+            Looking := 'S';
+      IF W2 = 'a'
+      THEN
+        IF W3 = 'i'
+        THEN
+          IF W4 = 'r'
+          THEN {'air' найдено}
+            Looking := 'A' 
     END;
-  IF Looking = 'L'
+  IF Looking = 'A'
   THEN
-    WRITELN('The British are coming by land.')
+    WRITELN('The British are coming by air.')
   ELSE
-    IF Looking = 'S'
+    IF Looking = 'L'
     THEN
-      WRITELN('The British are coming by sea.')
+      WRITELN('The British are coming by land.')
     ELSE
-      WRITELN('Sarah didn''t say')
+      IF Looking = 'S'
+      THEN
+        WRITELN('The British are coming by sea.')
+      ELSE        
+        WRITELN('Sarah didn''t say')
 END. {Sarah revere}
+  

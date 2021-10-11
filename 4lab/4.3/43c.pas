@@ -39,18 +39,22 @@ BEGIN {SarahRevere}
           W2 := W3;
           W3 := W4;
           READ(W4);
-          IF W4 = '#'		  
-          THEN {Конец данных}
+          IF W4 = '#'
+          THEN {Конец данных}            
             IF W3 = 'a'
             THEN
               IF W2 = 'e'
               THEN
                 IF W1 = 's'
-                THEN		
-          ELSE
-            Looking := 'N'
-        END;
-     WRITELN(W1, W2, W3, W4, ' ', Looking)
+                THEN
+                  Looking := 'S'                               		
+                ELSE
+                  Looking := 'N'
+              ELSE
+                Looking := 'N'
+            ELSE
+              Looking := 'N'               
+        END     
     END;
   IF Looking = 'L'
   THEN

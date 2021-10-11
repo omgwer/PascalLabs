@@ -41,7 +41,7 @@ BEGIN {SarahRevere}
           READ(W4);
           IF W4 = '#'
           THEN {Конец данных}
-            Looking := 'N';
+            Looking := 'N'
         END
     END;
   IF Looking = 'L'
