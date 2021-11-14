@@ -22,36 +22,40 @@ BEGIN {SelectSort}
   {Сортировать F1 в OUTPUT, используя стратегию SelectSort}
   {WRITE(OUTPUT, 'SORTED DATA: ');}
   RESET(F1);
-  READ(F1, Ch);
-  WRITE(OUTPUT, 'F2: ');
+  READ(F1, Ch);    
   WHILE Ch <> '#'
   DO { Ch <> '#' и Ch1 - первый символ F1}
-    BEGIN
-      {Выбираем минимальный из F1 b копируем остаток F1 в F2}
-      REWRITE(F2);
-      Min := Ch;      
+    BEGIN  {Выбираем минимальный из F1 и копируем остаток F1 в F2}
+      REWRITE(F2);     
+      Min := Ch;
+      WRITE(OUTPUT, 'Min = ');
+      WRITE(OUTPUT, Min);
+      WRITE(OUTPUT, ' F2 = ');      
       READ(F1, Ch);            
       WHILE Ch <> '#'
       DO { Ch <> '#' и Ch1 - первый символ F1}
-        BEGIN
-          {Выбираем минимальный из (Ch, Min)
-           копируем второй символ в F2}          
-          WRITE(F2, Ch); {Выводим F2 чтобы проверить} 
+        BEGIN {Выбираем минимальный из (Ch, Min) копируем второй символ в F2}                    
+          WRITE(F2, Ch);
+          WRITE(OUTPUT, Ch);            
           READ(F1, Ch)                             
-        END;
+        END;      
       WRITELN(F2, '#');
-      { WRITE(OUTPUT, Min); }
+      {WRITE(OUTPUT, Min);}
       {Копируем F2 в F1}
       RESET(F2);
       REWRITE(F1);
       READ(F2, Ch);
+      WRITELN(OUTPUT);
+      WRITE(OUTPUT, 'F1 = ');
       WHILE Ch <> '#'
       DO
         BEGIN
           WRITE(F1, Ch);
+          WRITE(OUTPUT, Ch);
           READ(F2, Ch)                    
         END;
       WRITELN(F1, '#');
+      WRITE(OUTPUT, ' ');
       {Копируем F2 в F1}
       RESET(F1);
       READ(F1, Ch)
