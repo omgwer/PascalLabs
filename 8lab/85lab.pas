@@ -1,0 +1,4 @@
+PROGRAM PrintEmptyString(INPUT, OUTPUT);
+BEGIN
+  WRITELN
+END.

@@ -43,7 +43,7 @@ BEGIN { BubbleSort }
                       Sorted := 'N'
                     END
                 END;
-              WRITELN(F2, Ch1); { Выводим последний символ в F2 } {7.4b перенес запись CH1 в F2 внутрь условия}  
+              WRITELN(F2, Ch1) { Выводим последний символ в F2 } {7.4b перенес запись CH1 в F2 внутрь условия}  
             END;                    
           { Копируем F2 в F1 }
           RESET(F2);
@@ -66,5 +66,5 @@ BEGIN { BubbleSort }
         END;
       WRITELN(OUTPUT);      
       READLN(INPUT)
-    END;
+    END
 END.
