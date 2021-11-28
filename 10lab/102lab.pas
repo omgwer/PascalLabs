@@ -36,8 +36,7 @@ BEGIN
               IF NOT EOLN(INPUT)      { Если после BEGIN не конец строки, прочитать }
               THEN
                 READ(INPUT, Ch);             { защищенное чтение символа после BEGIN }
-              WRITELN(OUTPUT, 'BEGIN');
-              WRITE(' ', ' ')
+              WRITELN(OUTPUT, 'BEGIN');              
             END
         ELSE            
           Condition := 'Q';       
@@ -51,6 +50,14 @@ BEGIN
               Condition := 'Q';
               Ch := 'e'
             END;
+        IF Ch = 'E' { выводим END. }
+        THEN
+          BEGIN
+            REWRITE(INPUT);
+            WRITELN('END.');  
+          END
+        ELSE
+          WRITE(' ', ' ');      
         IF Ch = ';' { выводим все ';' в одной строке, после перенос }
         THEN
           BEGIN                    
@@ -79,18 +86,14 @@ BEGIN
                     Condition := 'Q'
                   END
               END;                     
-            WRITELN;                
-          END;
-        IF Ch = 'E' { выводим END. }
-        THEN
-          BEGIN
-            REWRITE(INPUT);
-            WRITELN('END.')  
-          END;
+            WRITELN;                           
+          END;        
+         IF Ch <> 'E' { Выставление пробелов перед оператором }
+        THEN          
+          WRITE(' ', ' ');                   
         IF Ch = 'W'  { ожидаем WRITE или WRITELN }
         THEN
-          BEGIN
-            WRITE(OUTPUT, ' ', ' ');
+          BEGIN            
             WHILE Ch <> 'E'
             DO
               IF NOT EOLN(INPUT)
@@ -106,23 +109,69 @@ BEGIN
                 END;
             WRITE(OUTPUT, Ch); {напечатали слово WRITE }
             IF NOT EOLN(INPUT)
+            THEN              
+              READ(INPUT, Ch)
+            ELSE
+              BEGIN
+                REWRITE(INPUT);
+                Condition := 'Q'
+              END;            
+            IF Ch = 'L'   { если символ 'L' Дописываем LN }
             THEN
               BEGIN
-                READ(INPUT, Ch);
-                IF Ch = 'L'
+                WRITE(OUTPUT, Ch);
+                IF NOT EOLN(INPUT)
                 THEN
                   BEGIN
-                    WRITE(OUTPUT, Ch);
-                    IF NOT EOLN(INPUT)
+                    READ(INPUT, Ch);
+                    WRITE(OUTPUT, Ch) { дописываем LN }
+                  END                      
+              END;
+            IF NOT EOLN(INPUT) { защищенно читаем следующий символ поcле WRITE\LN }
+            THEN                              
+              READ(INPUT, Ch);               
+              WHILE Ch = ' '   { убираем лишние пробелы }
+              DO
+                IF NOT EOLN(INPUT)
+                THEN
+                  READ(INPUT, Ch)
+                ELSE
+                  BEGIN
+                    Condition := 'Q';
+                    Ch := 'e'
+                  END;          { конец убирания пробелов }
+            IF Ch = '('         { ЕСЛИ следующий символ '(' }
+            THEN
+              BEGIN
+                WRITE(OUTPUT, Ch);
+                WHILE Ch <> ')'   { выводим все символы в скобках, исключая пробелы }
+                DO
+                  BEGIN                              
+                    WHILE Ch = ' '   { убираем лишние пробелы }
+                    DO
+                      IF NOT EOLN(INPUT)
+                      THEN
+                        READ(INPUT, Ch)
+                      ELSE
+                        BEGIN
+                          Condition := 'Q';
+                          Ch := 'e'
+                        END;         { конец убирания пробелов }
+                    IF NOT EOLN(INPUT) { После убирания пробелов, записываем символ }
                     THEN
-                      READ(INPUT, Ch);
-                    WRITE(OUTPUT, Ch); { дописываем LN }
-                    IF NOT EOLN(INPUT)
-                    THEN
-                      READ(INPUT)
+                      BEGIN                        
+                        READ(INPUT, Ch);
+                        WRITE(OUTPUT, Ch);
+                        IF Ch = ','
+                        THEN
+                          WRITE(' ')   
+                      END                   
                   END
               END
           END;
+          IF Ch <> 'E' { Выставление пробелов перед оператором }
+          THEN          
+            WRITE(' ', ' ');  
          IF Ch = 'R'  { ожидаем READ или READLN }
         THEN
           BEGIN
