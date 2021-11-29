@@ -1,8 +1,8 @@
-PROGRAM TextFormat(INPUT, OUTPUT);
+PROGRAM ProgramTextFormat(INPUT, OUTPUT);
 VAR
-  Condition, Ch: CHAR; { Q - close program, B - begin, E - end, W - write, w - writeln, R - read, r - readln, S - состояние начала чтения строки, e - ошибка }
+  Condition, Delemiter, Ch : CHAR; { Q - error }
 BEGIN
-  Condition := 'S';
+  Condition := 'S'; 
   WHILE NOT EOLN(INPUT) { последовательно читаем символы в строке }
   DO
     IF Condition <> 'Q'
@@ -36,7 +36,7 @@ BEGIN
               IF NOT EOLN(INPUT)      { Если после BEGIN не конец строки, прочитать }
               THEN
                 READ(INPUT, Ch);             { защищенное чтение символа после BEGIN }
-              WRITELN(OUTPUT, 'BEGIN');              
+              WRITELN(OUTPUT, 'BEGIN')              
             END
         ELSE            
           Condition := 'Q';       
@@ -49,18 +49,16 @@ BEGIN
             BEGIN
               Condition := 'Q';
               Ch := 'e'
-            END;
-        IF Ch = 'E' { выводим END. }
+            END;                
+        IF Ch = ';' { ожидаем ; }
         THEN
           BEGIN
-            REWRITE(INPUT);
-            WRITELN('END.');  
-          END
-        ELSE
-          WRITE(' ', ' ');      
-        IF Ch = ';' { выводим все ';' в одной строке, после перенос }
-        THEN
-          BEGIN                    
+            IF Delemiter <> 'T'
+            THEN
+              BEGIN
+                WRITE(OUTPUT, ' ', ' ');
+                Delemiter := 'F'
+              END;
             WHILE Ch = ';'
             DO
               BEGIN
@@ -78,7 +76,7 @@ BEGIN
                         BEGIN
                           Condition := 'Q';
                           Ch := 'e'
-                        END                   
+                        END;                                      
                   END
                 ELSE
                   BEGIN
@@ -86,14 +84,13 @@ BEGIN
                     Condition := 'Q'
                   END
               END;                     
-            WRITELN;                           
-          END;        
-         IF Ch <> 'E' { Выставление пробелов перед оператором }
-        THEN          
-          WRITE(' ', ' ');                   
+            WRITELN                           
+          END;                          
         IF Ch = 'W'  { ожидаем WRITE или WRITELN }
         THEN
-          BEGIN            
+          BEGIN
+            WRITE(' ', ' ');
+            Delemiter := 'T';            
             WHILE Ch <> 'E'
             DO
               IF NOT EOLN(INPUT)
@@ -124,60 +121,124 @@ BEGIN
                 THEN
                   BEGIN
                     READ(INPUT, Ch);
-                    WRITE(OUTPUT, Ch) { дописываем LN }
+                    WRITE(OUTPUT, Ch); { дописываем LN }
+                    IF NOT EOLN(INPUT) { защищенно читаем следующий символ поcле WRITELN }
+                    THEN                              
+                      READ(INPUT, Ch)
                   END                      
-              END;
-            IF NOT EOLN(INPUT) { защищенно читаем следующий символ поcле WRITE\LN }
-            THEN                              
-              READ(INPUT, Ch);               
-              WHILE Ch = ' '   { убираем лишние пробелы }
-              DO
-                IF NOT EOLN(INPUT)
-                THEN
-                  READ(INPUT, Ch)
-                ELSE
-                  BEGIN
-                    Condition := 'Q';
-                    Ch := 'e'
-                  END;          { конец убирания пробелов }
+              END;                           
+            WHILE Ch = ' '   { убираем лишние пробелы }
+            DO
+              IF NOT EOLN(INPUT)
+              THEN
+                READ(INPUT, Ch)
+              ELSE
+                BEGIN
+                  Condition := 'Q';
+                  Ch := 'e'
+                END;          { конец убирания пробелов }
             IF Ch = '('         { ЕСЛИ следующий символ '(' }
             THEN
               BEGIN
                 WRITE(OUTPUT, Ch);
                 WHILE Ch <> ')'   { выводим все символы в скобках, исключая пробелы }
                 DO
-                  BEGIN                              
+                  BEGIN
+                    IF NOT EOLN(INPUT)
+                    THEN
+                      READ(INPUT, Ch);                              
                     WHILE Ch = ' '   { убираем лишние пробелы }
                     DO
                       IF NOT EOLN(INPUT)
                       THEN
-                        READ(INPUT, Ch)
-                      ELSE
-                        BEGIN
-                          Condition := 'Q';
-                          Ch := 'e'
-                        END;         { конец убирания пробелов }
-                    IF NOT EOLN(INPUT) { После убирания пробелов, записываем символ }
+                        READ(INPUT, Ch);                      
+                    WRITE(OUTPUT, Ch);
+                    IF Ch = ','
                     THEN
-                      BEGIN                        
-                        READ(INPUT, Ch);
-                        WRITE(OUTPUT, Ch);
-                        IF Ch = ','
-                        THEN
-                          WRITE(' ')   
-                      END                   
+                      WRITE(' ')                
                   END
-              END
-          END;
-          IF Ch <> 'E' { Выставление пробелов перед оператором }
-          THEN          
-            WRITE(' ', ' ');  
-         IF Ch = 'R'  { ожидаем READ или READLN }
+              END                
+            END;
+        IF Ch = 'R'  { ожидаем READ или READLN }
         THEN
           BEGIN
-            
+            WRITE(' ', ' ');
+            Delemiter := 'T';            
+            WHILE Ch <> 'D'
+            DO
+              IF NOT EOLN(INPUT)
+              THEN
+                BEGIN
+                  WRITE(OUTPUT, Ch);
+                  READ(INPUT, Ch)                  
+                END
+              ELSE
+                BEGIN
+                  REWRITE(INPUT);
+                  Condition := 'Q'
+                END;
+            WRITE(OUTPUT, Ch); {напечатали слово WRITE }
+            IF NOT EOLN(INPUT)
+            THEN              
+              READ(INPUT, Ch)
+            ELSE
+              BEGIN
+                REWRITE(INPUT);
+                Condition := 'Q'
+              END;            
+            IF Ch = 'L'   { если символ 'L' Дописываем LN }
+            THEN
+              BEGIN
+                WRITE(OUTPUT, Ch);
+                IF NOT EOLN(INPUT)
+                THEN
+                  BEGIN
+                    READ(INPUT, Ch);
+                    WRITE(OUTPUT, Ch); { дописываем LN }
+                    IF NOT EOLN(INPUT) { защищенно читаем следующий символ поcле WRITELN }
+                    THEN                              
+                      READ(INPUT, Ch)
+                  END                      
+              END;                           
+            WHILE Ch = ' '   { убираем лишние пробелы }
+            DO
+              IF NOT EOLN(INPUT)
+              THEN
+                READ(INPUT, Ch)
+              ELSE
+                BEGIN
+                  Condition := 'Q';
+                  Ch := 'e'
+                END;          { конец убирания пробелов }
+            IF Ch = '('         { ЕСЛИ следующий символ '(' }
+            THEN
+              BEGIN
+                WRITE(OUTPUT, Ch);
+                WHILE Ch <> ')'   { выводим все символы в скобках, исключая пробелы }
+                DO
+                  BEGIN
+                    IF NOT EOLN(INPUT)
+                    THEN
+                      READ(INPUT, Ch);                              
+                    WHILE Ch = ' '   { убираем лишние пробелы }
+                    DO
+                      IF NOT EOLN(INPUT)
+                      THEN
+                        READ(INPUT, Ch);                      
+                    WRITE(OUTPUT, Ch);
+                    IF Ch = ','
+                    THEN
+                      WRITE(' ')                
+                  END
+              END                
+            END;
+        IF Ch = 'E' { выводим END. }
+        THEN
+          BEGIN
+            REWRITE(INPUT);
+            WRITELN('END.')  
           END
-      END       
+      END
     ELSE
       BEGIN
         REWRITE(INPUT); 
