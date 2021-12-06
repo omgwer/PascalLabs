@@ -1,0 +1,12 @@
+PROGRAM Last(INPUT, OUTPUT);
+VAR
+  Ch: CHAR;
+BEGIN
+  WHILE NOT EOLN
+  DO
+    IF NOT EOLN
+    THEN
+      READ(Ch)
+    ELSE
+      WRITELN(Ch)
+END.

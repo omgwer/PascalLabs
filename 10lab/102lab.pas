@@ -32,10 +32,15 @@ BEGIN
           THEN
             BEGIN
               Condition := ' ';
-              READ(Ch, Ch, Ch, Ch);   { Передвинуть каретку до N }
-              IF NOT EOLN(INPUT)      { Если после BEGIN не конец строки, прочитать }
-              THEN
-                READ(INPUT, Ch);             { защищенное чтение символа после BEGIN }
+              WHILE Ch <> 'N'
+              DO
+                BEGIN                    { Передвинуть каретку до N }
+                  IF NOT EOLN(INPUT)      { Если после BEGIN не конец строки, прочитать }
+                  THEN
+                    READ(INPUT, Ch)
+                  ELSE
+                    Ch := 'N'    
+                END;             { защищенное чтение символа после BEGIN }
               WRITELN(OUTPUT, 'BEGIN')              
             END
         ELSE            
@@ -123,8 +128,13 @@ BEGIN
                     READ(INPUT, Ch);
                     WRITE(OUTPUT, Ch); { дописываем LN }
                     IF NOT EOLN(INPUT) { защищенно читаем следующий символ поcле WRITELN }
-                    THEN                              
-                      READ(INPUT, Ch)
+                    THEN
+                      BEGIN
+                        READ(INPUT, Ch);
+                        IF Ch = ';'
+                        THEN
+                          WRITE(';')
+                      END                     
                   END                      
               END;                           
             WHILE Ch = ' '   { убираем лишние пробелы }
@@ -146,7 +156,9 @@ BEGIN
                   BEGIN
                     IF NOT EOLN(INPUT)
                     THEN
-                      READ(INPUT, Ch);                              
+                      READ(INPUT, Ch)
+                    ELSE
+                      Ch := ')';                              
                     WHILE Ch = ' '   { убираем лишние пробелы }
                     DO
                       IF NOT EOLN(INPUT)
@@ -156,9 +168,32 @@ BEGIN
                     IF Ch = ','
                     THEN
                       WRITE(' ')                
-                  END
-              END                
-            END;
+                  END            
+              END;
+            
+            WHILE Ch = ' '
+            DO
+              IF NOT EOLN(INPUT)
+              THEN
+                READ(Ch);                  
+            IF Ch = '{'
+            THEN
+              BEGIN
+                WRITE(OUTPUT, Ch);
+                WHILE Ch <> '}'
+                DO
+                  BEGIN
+                    IF NOT EOLN(INPUT)
+                    THEN
+                      BEGIN
+                        READ(INPUT, Ch);
+                        WRITE(OUTPUT, Ch)
+                      END
+                    ELSE
+                      Ch := '}'
+                  END;                 
+              END                                            
+          END;
         IF Ch = 'R'  { ожидаем READ или READLN }
         THEN
           BEGIN
@@ -197,7 +232,12 @@ BEGIN
                     WRITE(OUTPUT, Ch); { дописываем LN }
                     IF NOT EOLN(INPUT) { защищенно читаем следующий символ поcле WRITELN }
                     THEN                              
-                      READ(INPUT, Ch)
+                      BEGIN
+                        READ(INPUT, Ch);
+                        IF Ch = ';'
+                        THEN
+                          WRITE(';')
+                      END
                   END                      
               END;                           
             WHILE Ch = ' '   { убираем лишние пробелы }
@@ -214,12 +254,14 @@ BEGIN
             THEN
               BEGIN
                 WRITE(OUTPUT, Ch);
-                WHILE Ch <> ')'   { выводим все символы в скобках, исключая пробелы }
+                WHILE Ch <> ')'  { выводим все символы в скобках, исключая пробелы }
                 DO
                   BEGIN
                     IF NOT EOLN(INPUT)
                     THEN
-                      READ(INPUT, Ch);                              
+                      READ(INPUT, Ch)
+                    ELSE
+                      Ch := ')';                              
                     WHILE Ch = ' '   { убираем лишние пробелы }
                     DO
                       IF NOT EOLN(INPUT)
@@ -230,12 +272,54 @@ BEGIN
                     THEN
                       WRITE(' ')                
                   END
-              END                
-            END;
+              END;              
+            WHILE Ch = ' '
+            DO
+              IF NOT EOLN(INPUT)
+              THEN
+                READ(Ch);                  
+            IF Ch = '{'
+            THEN
+              BEGIN
+                WRITE(OUTPUT, Ch);
+                WHILE Ch <> '}'
+                DO
+                  BEGIN
+                    IF NOT EOLN(INPUT)
+                    THEN
+                      BEGIN
+                        READ(INPUT, Ch);
+                        WRITE(OUTPUT, Ch)
+                      END
+                    ELSE
+                      Ch := '}'
+                  END;                 
+              END    
+          END;
+        IF Ch = '{'
+        THEN
+          BEGIN
+            WRITE(OUTPUT, Ch);
+            WHILE Ch <> '}'
+            DO
+              BEGIN
+                IF NOT EOLN(INPUT)
+                THEN
+                  BEGIN
+                    READ(INPUT, Ch);
+                    WRITE(OUTPUT, Ch)
+                  END
+                ELSE
+                  Ch := '}'
+              END;
+            WRITELN  
+          END;    
         IF Ch = 'E' { выводим END. }
         THEN
           BEGIN
-            REWRITE(INPUT);
+            IF Delemiter = 'T'
+            THEN
+              WRITELN;
             WRITELN('END.')  
           END
       END
