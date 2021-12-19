@@ -25,7 +25,7 @@ BEGIN
 	        WHILE (Ch = ' ') AND (NOT EOLN)
 	        DO
 	          READ(Ch);
-	        IF NOT EOLN
+	        IF Ch <> ' '
 	        THEN          
 	          WRITE(' ');
 	        IF Ch <> ' '
