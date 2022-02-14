@@ -1,0 +1,19 @@
+PROGRAM CopyTwice(INPUT, OUTPUT);
+
+PROCEDURE RCopy(VAR INPUT: TEXT);
+VAR
+  Ch: CHAR;
+BEGIN
+  IF NOT EOLN(INPUT)
+  THEN
+    BEGIN
+      READ(INPUT, Ch);
+      WRITE(OUTPUT, Ch);
+      RCopy(INPUT)      
+    END
+END;
+
+BEGIN
+  RCopy(INPUT);
+  WRITELN(OUTPUT)
+END.
