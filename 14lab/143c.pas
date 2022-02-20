@@ -23,11 +23,11 @@ VAR
   PROCEDURE Split(VAR F1, F2, F3: TEXT); {Разбивает F1 на F2 и F3} 
   VAR 
     Ch, Switch: CHAR;
-  BEGIN {Split}
-    RESET(F1);
-    REWRITE(F2);
-    REWRITE(F3);        
-
+  BEGIN {Split}    
+    RESET(F1);    
+    REWRITE(F2);    
+    REWRITE(F3);
+    
     Switch := '2';
     WHILE NOT (EOLN(F1))
     DO
@@ -113,10 +113,7 @@ VAR
 
     WRITELN(F1)
   END; {Merge}
-
-BEGIN {RecursiveSort} 
-  ASSIGN(F2, 'C:\FPC\trash\F2.txt'); 
-  ASSIGN(F3, 'C:\FPC\trash\F3.txt');
+BEGIN {RecursiveSort}   
   RESET(F1);    
   IF NOT (EOLN(F1))
   THEN
@@ -127,23 +124,25 @@ BEGIN {RecursiveSort}
         BEGIN
           WRITELN('input recursive');                    
           Split(F1, F2, F3); { in :  F1 - READ, F2 - ?, F3 - ? 
-                               out : F1 - READ, F2 - WRITE, F3 - WRITE}
-          WRITELN('continue split');
-          RecursiveSort(F2); 
-          {RecursiveSort(F3);}
-          Merge(F1, F2, F3);          
+                               out : F1 - READ, F2 - WRITE, F3 - WRITE}         
+          RecursiveSort(F2);          
+          RecursiveSort(F3);          
+          Merge(F1, F2, F3);                    
+          WRITELN(F1);          
         END
       ELSE {file < 2 simbols}
-        WRITELN(F1, Ch)    
-    END
+        BEGIN
+          REWRITE(F1);
+          WRITELN(F1, Ch);
+        END        
+    END;   
 END;   {RecursiveSort}
 
-BEGIN
-  ASSIGN(FileToSort, 'C:\FPC\trash\FileToSort.txt');     
+BEGIN      
   REWRITE(FileToSort);
   CopyFile(INPUT, FileToSort); 
   RESET(FileToSort);   
   RecursiveSort(FileToSort);
   RESET(FileToSort);
-  CopyFile(FileToSort, OUTPUT);   
+  CopyFile(FileToSort, OUTPUT);     
 END.
