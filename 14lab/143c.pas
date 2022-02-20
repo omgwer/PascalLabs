@@ -12,21 +12,21 @@ BEGIN
       READ(InFile, Ch);
       WRITE(OutFile, Ch)           
     END;
-  WRITELN(OutFile)  
+  WRITELN(OutFile)
 END;
 
 PROCEDURE RecursiveSort(VAR F1: Text);
 VAR  
   F2, F3: TEXT;
   Ch: CHAR;
-  {Разбивает F1 на F2 и F3} 
-  PROCEDURE Split(VAR F1, F2, F3: TEXT);
+  
+  PROCEDURE Split(VAR F1, F2, F3: TEXT); {Разбивает F1 на F2 и F3} 
   VAR 
     Ch, Switch: CHAR;
   BEGIN {Split}
     RESET(F1);
     REWRITE(F2);
-    REWRITE(F3);    
+    REWRITE(F3);        
 
     Switch := '2';
     WHILE NOT (EOLN(F1))
@@ -49,8 +49,7 @@ VAR
     WRITELN(F3)
   END; {Split}
 
-  PROCEDURE Merge(VAR F1, F2, F3: TEXT); 
-  {Сливает F2, F3 в F1  в сортированном порядке}
+  PROCEDURE Merge(VAR F1, F2, F3: TEXT); {Сливает F2, F3 в F1  в сортированном порядке}  
   VAR 
     Ch2, Ch3: CHAR;
   BEGIN {Merge}
@@ -69,7 +68,7 @@ VAR
       READ(F3, Ch3);      
       IF EOLN(F3)
       THEN
-        WRITE(F1, Ch3);      
+        WRITE(F1, Ch3);
 
     WHILE (NOT(EOLN(F2))) AND (NOT(EOLN(F3)))
     DO
@@ -115,31 +114,36 @@ VAR
     WRITELN(F1)
   END; {Merge}
 
-BEGIN
-  {RecursiveSort}
+BEGIN {RecursiveSort} 
   ASSIGN(F2, 'C:\FPC\trash\F2.txt'); 
   ASSIGN(F3, 'C:\FPC\trash\F3.txt');
   RESET(F1);    
   IF NOT (EOLN(F1))
   THEN
     BEGIN
+      READ(F1, Ch);
       IF NOT (EOLN(F1))
       THEN {Файл имеет как минимум 2 символа}
-        BEGIN          
-          Split(F1, F2, F3);         
-          {RecursiveSort(F2);
-          RecursiveSort(F3);}
+        BEGIN
+          WRITELN('input recursive');                    
+          Split(F1, F2, F3); { in :  F1 - READ, F2 - ?, F3 - ? 
+                               out : F1 - READ, F2 - WRITE, F3 - WRITE}
+          WRITELN('continue split');
+          RecursiveSort(F2); 
+          {RecursiveSort(F3);}
           Merge(F1, F2, F3);          
-          RESET(F1);        
-          CopyFile(F1, OUTPUT);          
         END
+      ELSE {file < 2 simbols}
+        WRITELN(F1, Ch)    
     END
 END;   {RecursiveSort}
 
 BEGIN
-  ASSIGN(FileToSort, 'C:\FPC\trash\FileToSort.txt');  
+  ASSIGN(FileToSort, 'C:\FPC\trash\FileToSort.txt');     
   REWRITE(FileToSort);
   CopyFile(INPUT, FileToSort); 
   RESET(FileToSort);   
-  RecursiveSort(FileToSort);   
+  RecursiveSort(FileToSort);
+  RESET(FileToSort);
+  CopyFile(FileToSort, OUTPUT);   
 END.
