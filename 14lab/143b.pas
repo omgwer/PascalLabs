@@ -70,12 +70,18 @@ VAR
         THEN 
           BEGIN
             WRITE(F1, Ch2);
-            READ(F2, Ch2)
+            READ(F2, Ch2);
+            IF EOLN(F2)
+            THEN
+              WRITE(F1,Ch2);
           END
         ELSE
           BEGIN
             WRITE(F1, Ch3);
-            READ(F3, Ch3)
+            READ(F3, Ch3);
+            IF EOLN(F3)
+            THEN
+              WRITE(F1, Ch3)
           END
       END;
 
@@ -88,13 +94,19 @@ VAR
     DO
       BEGIN
         WRITE(F1, Ch2);
-        READ(F2, Ch2)
+        READ(F2, Ch2);
+        IF EOLN(F2)
+        THEN
+          WRITE(F1, Ch2);
       END; 
     WHILE NOT (EOLN(F3)) {копировать остаток F3 в F1}
     DO
       BEGIN
         WRITE(F1, Ch3);
-        READ(F3, Ch3)
+        READ(F3, Ch3);
+        IF EOLN(F3)
+        THEN
+          WRITE(F3, Ch3);
       END;      
     WRITELN(F1)
   END; {Merge}
