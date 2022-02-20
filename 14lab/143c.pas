@@ -56,62 +56,92 @@ VAR
     RESET(F2);
     RESET(F3);
     REWRITE(F1);
+    READ(F2, Ch2);
+    READ(F3, Ch3);
 
-    IF NOT EOLN(F2)
-    THEN    
-      READ(F2, Ch2);
-      IF EOLN(F2)
+    IF EOLN(F2) AND EOLN(F3)
+    THEN
+      IF Ch2 < Ch3
       THEN
-        WRITE(F1, Ch2);
-    IF NOT EOLN(F3)
-    THEN    
-      READ(F3, Ch3);      
-      IF EOLN(F3)
-      THEN
-        WRITE(F1, Ch3);
+        WRITELN(F1, Ch2, Ch3)
+      ELSE
+        WRITELN(F1, Ch3, Ch2);
 
     WHILE (NOT(EOLN(F2))) AND (NOT(EOLN(F3)))
     DO
-      BEGIN
-        IF Ch2 < Ch3
-        THEN 
+    BEGIN 
+      IF Ch2 < Ch3
+      THEN
+        BEGIN
+          WRITE(F1, Ch2);
+          READ(F2, Ch2)
+        END
+      ELSE
+        BEGIN
+          WRITE(F1, Ch3);
+          READ(F3, Ch3)
+        END
+    END;         
+
+    WHILE (NOT(EOLN(F2))) OR (NOT(EOLN(F3)))
+    DO
+      BEGIN        
+        IF Ch3 > Ch2
+        THEN
           BEGIN
             WRITE(F1, Ch2);
-            READ(F2, Ch2);
-            IF EOLN(F2)
+            IF NOT EOLN(F2)
             THEN
-              WRITE(F1,Ch2);
+              BEGIN
+                READ(F2, Ch2);
+                IF EOLN(F2)
+                THEN
+                  IF Ch2 > Ch3
+                  THEN
+                    WRITE(F1, Ch3, Ch2)
+                  ELSE
+                    WRITE(F1, Ch2, Ch3)
+              END 
+            ELSE
+              BEGIN
+                WRITE(F1, Ch3);
+                WHILE NOT EOLN(F3)
+                DO
+                  BEGIN
+                    READ(F3, Ch3);
+                    WRITE(F1, Ch3)
+                  END
+              END
           END
         ELSE
           BEGIN
             WRITE(F1, Ch3);
-            READ(F3, Ch3);
-            IF EOLN(F3)
+            IF NOT EOLN(F3)
             THEN
-              WRITE(F1, Ch3)
-          END
-      END;        
-
-    WHILE NOT (EOLN(F2)) {копировать остаток F2 в F1}
-    DO
-      BEGIN
-        WRITE(F1, Ch2);
-        READ(F2, Ch2);
-        IF EOLN(F2)
-        THEN
-          WRITE(F1, Ch2);
+              BEGIN
+                READ(F3, Ch3);
+                IF EOLN(F3)
+                THEN
+                  IF Ch2 > Ch3
+                  THEN
+                    WRITE(F1, Ch3, Ch2)
+                  ELSE
+                    WRITE(F1, Ch2, Ch3)
+              END      
+            ELSE
+              BEGIN
+                WRITE(F1, Ch2);
+                WHILE NOT EOLN(F2)
+                DO
+                  BEGIN
+                    READ(F2, Ch2);
+                    WRITE(F1, Ch2)
+                  END
+              END
+          END                                      
       END; 
-    WHILE NOT (EOLN(F3)) {копировать остаток F3 в F1}
-    DO
-      BEGIN
-        WRITE(F1, Ch3);
-        READ(F3, Ch3);
-        IF EOLN(F3)
-        THEN
-          WRITE(F1, Ch3);
-      END;
 
-    WRITELN(F1)
+    WRITELN(F1)  
   END; {Merge}
 BEGIN {RecursiveSort}   
   RESET(F1);    
@@ -122,7 +152,7 @@ BEGIN {RecursiveSort}
       IF NOT (EOLN(F1))
       THEN {Файл имеет как минимум 2 символа}
         BEGIN
-          WRITELN('input recursive');                    
+          RESET(F1);                              
           Split(F1, F2, F3); { in :  F1 - READ, F2 - ?, F3 - ? 
                                out : F1 - READ, F2 - WRITE, F3 - WRITE}         
           RecursiveSort(F2);          
@@ -130,12 +160,9 @@ BEGIN {RecursiveSort}
           Merge(F1, F2, F3);                    
           WRITELN(F1);          
         END
-      ELSE {file < 2 simbols}
-        BEGIN
-          REWRITE(F1);
-          WRITELN(F1, Ch);
-        END        
-    END;   
+      ELSE
+        RESET(F1)          
+    END   
 END;   {RecursiveSort}
 
 BEGIN      
