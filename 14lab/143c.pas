@@ -12,22 +12,22 @@ BEGIN
       READ(InFile, Ch);
       WRITE(OutFile, Ch)           
     END;
-  WRITELN(OutFile)  
+  WRITELN(OutFile)
 END;
 
 PROCEDURE RecursiveSort(VAR F1: Text);
 VAR  
   F2, F3: TEXT;
   Ch: CHAR;
-  {Разбивает F1 на F2 и F3} 
-  PROCEDURE Split(VAR F1, F2, F3: TEXT);
+  
+  PROCEDURE Split(VAR F1, F2, F3: TEXT); {Разбивает F1 на F2 и F3} 
   VAR 
     Ch, Switch: CHAR;
-  BEGIN {Split}
-    RESET(F1);
-    REWRITE(F2);
-    REWRITE(F3);    
-
+  BEGIN {Split}    
+    RESET(F1);    
+    REWRITE(F2);    
+    REWRITE(F3);
+    
     Switch := '2';
     WHILE NOT (EOLN(F1))
     DO
@@ -49,8 +49,7 @@ VAR
     WRITELN(F3)
   END; {Split}
 
-  PROCEDURE Merge(VAR F1, F2, F3: TEXT); 
-  {Сливает F2, F3 в F1  в сортированном порядке}
+  PROCEDURE Merge(VAR F1, F2, F3: TEXT); {Сливает F2, F3 в F1  в сортированном порядке}  
   VAR 
     Ch2, Ch3: CHAR;
   BEGIN {Merge}
@@ -122,12 +121,12 @@ VAR
               BEGIN
                 READ(F3, Ch3);
                 IF EOLN(F3)
+                THEN
+                  IF Ch2 > Ch3
                   THEN
-                    IF Ch2 > Ch3
-                    THEN
-                      WRITE(F1, Ch3, Ch2)
-                    ELSE
-                      WRITE(F1, Ch2, Ch3)
+                    WRITE(F1, Ch3, Ch2)
+                  ELSE
+                    WRITE(F1, Ch2, Ch3)
               END      
             ELSE
               BEGIN
@@ -141,34 +140,36 @@ VAR
               END
           END                                      
       END; 
-    WRITELN(F1)
-  END; {Merge}
 
-BEGIN {RecursiveSort}  
+    WRITELN(F1)  
+  END; {Merge}
+BEGIN {RecursiveSort}   
   RESET(F1);    
   IF NOT (EOLN(F1))
   THEN
     BEGIN
-      READ(F1, Ch);      
+      READ(F1, Ch);
       IF NOT (EOLN(F1))
-      THEN {Файл имеет как минимум 2 символа}      
+      THEN {Файл имеет как минимум 2 символа}
         BEGIN
-          RESET(F1);          
-          Split(F1, F2, F3);         
-          {RecursiveSort(F2);
-          RecursiveSort(F3);}
-          Merge(F1, F2, F3);                   
+          RESET(F1);                              
+          Split(F1, F2, F3); { in :  F1 - READ, F2 - ?, F3 - ? 
+                               out : F1 - READ, F2 - WRITE, F3 - WRITE}         
+          RecursiveSort(F2);          
+          RecursiveSort(F3);          
+          Merge(F1, F2, F3);                    
+          WRITELN(F1);          
         END
       ELSE
-        RESET(F1)
-    END
+        RESET(F1)          
+    END   
 END;   {RecursiveSort}
 
-BEGIN   
+BEGIN      
   REWRITE(FileToSort);
   CopyFile(INPUT, FileToSort); 
   RESET(FileToSort);   
   RecursiveSort(FileToSort);
   RESET(FileToSort);
-  CopyFile(FileToSort, OUTPUT);   
+  CopyFile(FileToSort, OUTPUT);     
 END.
