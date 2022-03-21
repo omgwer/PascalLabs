@@ -1,0 +1,10 @@
+Student averages:
+sidorov : 4
+petrov : 4
+suvorov : 4
+kislitsyn : 4
+
+Counts points : 38
+
+Class average:
+3.8

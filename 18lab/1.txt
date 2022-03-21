@@ -1,0 +1,4 @@
+sidorov 3 3 4 5
+petrov 4 5 4 2
+suvorov 3 4 3 4
+kislitsyn 2 5 5 5
