@@ -27,7 +27,7 @@ BEGIN{WriteDate}
   WRITE(FOut,Res.Day:3)
 END;{WriteDate}
 
-PROCEDURE ReadDate (VAR FIn: TEXT; VAR Res: Date);
+PROCEDURE ReadDate(VAR FIn: TEXT; VAR Res: Date);
 BEGIN{ReadDate}
   ReadMonth(FIn,Res.Mo);
   READ(FIn,Res.Day)
