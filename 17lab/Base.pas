@@ -2,15 +2,14 @@ UNIT Base;
 
 INTERFACE
 
-{PROCEDURE GetNumberCount(VAR NumberCount);
-PROCEDURE GetMinNumber(VAR MinNumber);
-PROCEDURE GetMaxNumber(VAR MaxNumber); }
-PROCEDURE GetAverage(VAR Average: INTEGER);
+PROCEDURE SaveInc(VAR ThisValue, IncrementValue : INTEGER);
+PROCEDURE ReadNumber(VAR F: TEXT; VAR N: INTEGER);
+PROCEDURE GetAverage(VAR ThisNumber, NumbersCount, numberOfDots : INTEGER);
 
 IMPLEMENTATION
 VAR
   Ch: CHAR;
-  Digit, mNumberCount, mMinNumber, mMaxNumber, mAverage: INTEGER;
+  Digit: INTEGER;
 
 PROCEDURE ReadDigit(VAR F: TEXT; VAR Digit: INTEGER);  {читает 1 символ в строке}
 BEGIN
@@ -32,7 +31,7 @@ BEGIN
     END     
 END;
 
-PROCEDURE ReadNumber(VAR F: TEXT; VAR N: INTEGER);{Преобразует строку цифр из файла до первого нецифрового символа,  в соответствующее целое число N}
+PROCEDURE ReadNumber(VAR F: TEXT; VAR N: INTEGER);{Преобразует строку цифр из файла до первого нецифрового символа, в соответствующее целое число N}
 VAR
   Overflow: BOOLEAN;
 BEGIN
@@ -60,13 +59,31 @@ BEGIN
     END 
 END;
 
-PROCEDURE GetAverage(VAR Average: INTEGER);
-BEGIN  
-  Average := mAverage;
+PROCEDURE SaveInc(VAR ThisValue, IncrementValue : INTEGER);
+BEGIN
+  IF (ThisValue <= MAXINT - IncrementValue)
+  THEN
+    ThisValue := ThisValue + IncrementValue
+  ELSE
+    ThisValue := -2;
 END;
 
-
-
+// СуммаЧисел, КоличествоЧисел, Желаемая точность.
+PROCEDURE GetAverage(VAR ThisNumber, NumbersCount, numberOfDots : INTEGER);
+VAR
+  IterableModifier, Accurancy : INTEGER;
+BEGIN
+  Accurancy := numberOfDots;
+  IterableModifier := 10;
+  WHILE numberOfDots > 1
+  DO
+    BEGIN
+      IterableModifier:= IterableModifier * 10;
+      numberOfDots := numberOfDots - 1;
+    END;
+  ThisNumber := (ThisNumber * IterableModifier) DIV NumbersCount;  
+  WRITELN("Arrange is : ",ThisNumber DIV IterableModifier, '.', ThisNumber MOD IterableModifier: Accurancy)
+END;
 
 BEGIN
 END.
