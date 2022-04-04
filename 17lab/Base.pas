@@ -4,7 +4,6 @@ INTERFACE
 
 PROCEDURE SaveInc(VAR ThisValue, IncrementValue : INTEGER);
 PROCEDURE ReadNumber(VAR F: TEXT; VAR N: INTEGER);
-PROCEDURE GetAverage(VAR ThisNumber, NumbersCount, numberOfDots : INTEGER);
 
 IMPLEMENTATION
 VAR
@@ -68,22 +67,7 @@ BEGIN
     ThisValue := -2;
 END;
 
-// —умма„исел,  оличество„исел, ∆елаема€ точность.
-PROCEDURE GetAverage(VAR ThisNumber, NumbersCount, numberOfDots : INTEGER);
-VAR
-  IterableModifier, Accurancy : INTEGER;
-BEGIN
-  Accurancy := numberOfDots;
-  IterableModifier := 10;
-  WHILE numberOfDots > 1
-  DO
-    BEGIN
-      IterableModifier:= IterableModifier * 10;
-      numberOfDots := numberOfDots - 1;
-    END;
-  ThisNumber := (ThisNumber * IterableModifier) DIV NumbersCount;  
-  WRITELN("Arrange is : ",ThisNumber DIV IterableModifier, '.', ThisNumber MOD IterableModifier: Accurancy)
-END;
+
 
 BEGIN
 END.

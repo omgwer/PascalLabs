@@ -7,7 +7,7 @@ TYPE
   DayNum = 1 .. 31;
   Date = RECORD
            Mo: Month;
-           Day: DayNum;
+           Day: DayNum
          END;
   FileOfDate = FILE OF Date;  
 

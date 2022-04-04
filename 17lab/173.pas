@@ -17,7 +17,7 @@ BEGIN
   WHILE NOT EOLN(INPUT) AND NOT Overflow
   DO
     BEGIN
-      ReadNumber(INPUT, IterableNumber); // Читаем первое число  
+      ReadNumber(INPUT, IterableNumber); // Читаем первое число        
       IF (IterableNumber >= 0 )
       THEN
         BEGIN
@@ -44,7 +44,7 @@ BEGIN
     WRITELN("Numbers count : ", NumberCount);
     WRITELN("Min number : ", MinNumber);
     WRITELN("Max number : ", MaxNumber);
-    GetAverage(NumbersSumm, NumberCount, Accuracy);  
+    WRITELN("Arrange is : ",NumbersSumm DIV NumberCount, '.', (NumbersSumm MOD NumberCount * 100 DIV NumberCount DIV 10), (NumbersSumm MOD NumberCount * 100 DIV NumberCount MOD 10) )
     END
   ELSE
     WRITELN("ERROR WITH INPUT STRING");

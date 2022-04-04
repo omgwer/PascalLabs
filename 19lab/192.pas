@@ -61,10 +61,10 @@ BEGIN{SortDate}
           DO
             BEGIN
               READ(Tfile, VarDate);
-              WRITE(DateFile, VarDate);                            
+              WRITE(DateFile, VarDate)                            
             END;
-          RESET(DateFile);    
-        END;
+          RESET(DateFile)    
+        END
     END;
   {DP1.2
   Копируем DateFile в OUTPUT}
