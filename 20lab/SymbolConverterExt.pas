@@ -11,13 +11,15 @@ TYPE
   FUNCTION Letter2Set(Ch: CHAR): Xset;
   
 IMPLEMENTATION
-CONST  
+CONST
   ASet: XSet = [3,7,9,12,14,16,17,18,19,20,21,25];
   BSet: XSet = [1,2,3,4,5,6,10,11,12,13,14,15,16,20,21,22,23,24,25];
   CSet: XSet = [1,2,3,4,5,6,11,16,21,22,23,24,25];
   DSet: XSet = [1,2,3,4,6,10,11,15,16,20,21,22,23,24];
   ESet: XSet = [1,2,3,4,5,6,11,12,13,14,15,16,21,22,23,24,25];
   NoLetter: XSet = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25];
+
+PROCEDURE ArrayInit()
 
 
 PROCEDURE PrintLetterSet(LetterSet: XSet);
