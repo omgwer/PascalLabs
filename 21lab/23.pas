@@ -108,7 +108,6 @@ BEGIN { Encryption }
           READ(Msg[I])
         END;
       READLN;
-      Encode(Msg, I, SpaceValue)
       { –аспечатать кодированное сообщение }
       Decode(Msg, I, SpaceValue)
     END              
