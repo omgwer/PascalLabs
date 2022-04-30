@@ -1,21 +1,26 @@
 PROGRAM PrintSymbolChar(INPUT, OUTPUT);
-
+CONST
+  ElementLen = 5;
+  ElementSetMax = 25;
+  StrElementLen = 50;
+  ElementStrMax = 250;
 TYPE
-  XSet = SET OF 1 .. 25;
+  XSet = SET OF 1 .. ElementSetMax;
+  XStringSet = SET OF 1 .. ElementStrMax;
   Chiper = ARRAY [CHAR] OF XSet;
   CharArr = ARRAY [1 .. 10] OF CHAR;
 VAR
-  CharArray: Chiper;
-  OneStringArray: CharArr;
+  CharArray: Chiper;  
   FInput, ReadFile: TEXT;
   SetOfChars: XSet;
+  SetStringOfChars: XStringSet;
   Ch: CHAR;
-  ElementOfSet, RowStrafe, ColumnStrafe, I: INTEGER;
+  ElementOfSet, RowStrafe, ColumnStrafe, I, CharIndex: INTEGER;
 
 PROCEDURE Initialize(); //Инициализация массива
 BEGIN {Initialize}
   ASSIGN(FInput, 'XLetters.TXT');
-  RESET(FInput);  
+  RESET(FInput);
   WHILE NOT EOF(FInput)
   DO
     BEGIN
@@ -31,12 +36,12 @@ BEGIN {Initialize}
       READLN(FInput)
     END;
 END;  {Initialize}
-// Процедура печатающая букву
-PROCEDURE PrintLetterSet(LetterSet: XSet);
+// Процедура печатающая строку
+PROCEDURE PrintSetString(LetterSet: XStringSet);
 VAR
   Index: INTEGER;
 BEGIN
-  FOR Index := 1 TO 25
+  FOR Index := 1 TO ElementStrMax  
   DO
     BEGIN
       IF (Index IN LetterSet)
@@ -44,17 +49,22 @@ BEGIN
         WRITE('X')
       ELSE
         WRITE(' ');
-      IF Index MOD 5 = 0
+      IF Index MOD ElementLen = 0
       THEN
-        WRITELN  
+        WRITE(' ');
+      IF Index MOD StrElementLen = 0
+      THEN
+        WRITELN;      
     END
-END; 
-// Процедура записывающая массив из 10 символов.
-PROCEDURE GetStringArray(VAR OneStringArray: CharArr; VAR ReadFile: TEXT);
-VAR
-  Cha: CHAR;
+END;
+// Процедура записывающая множество 250
+PROCEDURE GetSetString(VAR SetStringOfChars: XStringSet; VAR ReadFile: TEXT);
+VAR 
+  Index, CharIndex, Num: INTEGER;
+  Ch: CHAR;
+  CharSet: XSet;
 BEGIN
-  FOR I:= 1 TO 10 
+  FOR Index:= 1 TO 10
   DO
     BEGIN
       IF EOF(ReadFile)
@@ -63,23 +73,31 @@ BEGIN
       IF EOLN(ReadFile)
       THEN
         READLN(ReadFile);        
-      READ(ReadFile,  OneStringArray[I]);  
-    END;  
-END;
-
-PROCEDURE PrintString(VAR OneStringArray: CharArr);
-BEGIN
-
+      READ(ReadFile, Ch);
+      CharSet := CharArray[Ch];
+      FOR CharIndex := 1 TO ElementSetMax
+      DO
+        BEGIN
+          IF (CharIndex IN CharSet)
+          THEN
+            BEGIN
+              Num := ((CharIndex - 1) DIV ElementLen) * (StrElementLen - ElementLen) + ElementLen * (Index - 1) + CharIndex;
+              SetStringOfChars := SetStringOfChars + [Num]
+            END          
+        END
+    END 
 END;
 
 BEGIN
   Initialize();
-  ASSIGN(ReadFile, 'Symbols.TXT');
-  ColumnStrafe := 1;
-  RowStrafe := 1;
-  RESET(ReadFile);  
-  GetStringArray(OneStringArray, ReadFile);
-  
-
-
+  ASSIGN(ReadFile, 'Symbols.TXT');      
+  RESET(ReadFile);
+  WHILE NOT EOF(ReadFile)
+  DO
+    BEGIN   
+      GetSetString(SetStringOfChars, ReadFile);
+      PrintSetString(SetStringOfChars);
+      SetStringOfChars := [];
+      WRITELN;
+  END  
 END.
