@@ -2,14 +2,10 @@ PROGRAM CountWords(INPUT, OUTPUT);
 USES
   StringHelper, DataHelper, SharedData;  
 VAR
-  Ch: CHAR;
   NewWord: Word;
-  Root: Tree;
-
-BEGIN
-  Root := NIL;
-  TreeDepth := 0;
-  NotAddedTreeElementCount := 0;
+  
+BEGIN  
+  InitData();
   WHILE NOT (EOF(INPUT))
   DO
     BEGIN
@@ -19,7 +15,5 @@ BEGIN
         Insert(Root, NewWord)
     END;
   PrintTree(Root);
-  IF NotAddedTreeElementCount > 0
-  THEN
-    WRITELN('Elements not added for tree - ', NotAddedTreeElementCount);  
+  PrintOverflowError();  
 END.

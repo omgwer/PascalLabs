@@ -6,12 +6,16 @@ USES
 
 PROCEDURE Insert(VAR Ptr:Tree; Data: Word);
 PROCEDURE PrintTree(Ptr: Tree);
+PROCEDURE InitData();
+PROCEDURE PrintOverflowError();
 
 IMPLEMENTATION
+
 
 PROCEDURE Insert(VAR Ptr:Tree; Data: Word);
 VAR
   Overflow: BOOLEAN;
+  ComparisonResult: CHAR;
 BEGIN
   Overflow := FALSE;
   IF NOT Overflow
@@ -34,14 +38,17 @@ BEGIN
             NotAddedTreeElementCount := NotAddedTreeElementCount + 1;   
         END
       ELSE
-        IF ComparisonWord(Ptr^.Key, Data) = '='
-        THEN
-          Ptr^.Count:= Ptr^.Count + 1
-        ELSE IF ComparisonWord(Ptr^.Key, Data) = '>'
-        THEN
-          Insert(Ptr^.LLink, Data)
-        ELSE
-          Insert(Ptr^.RLink, Data)
+        BEGIN
+          ComparisonResult := ComparisonWord(Ptr^.Key, Data);
+          IF ComparisonResult = '='
+          THEN
+            Ptr^.Count:= Ptr^.Count + 1
+          ELSE IF ComparisonResult = '>'
+          THEN
+            Insert(Ptr^.LLink, Data)
+          ELSE
+            Insert(Ptr^.RLink, Data)
+        END        
     END; 
 END;
 
@@ -55,6 +62,20 @@ BEGIN {PrintTree}
       PrintTree(Ptr^.RLink)
     END; 
 END;  {PrintTree} 
+
+PROCEDURE InitData();
+BEGIN
+  Root := NIL;
+  TreeDepth := 0;
+  NotAddedTreeElementCount := 0;
+END;
+
+PROCEDURE PrintOverflowError();
+BEGIN
+  IF NotAddedTreeElementCount > 0
+  THEN
+    WRITELN('Elements not added for tree - ', NotAddedTreeElementCount);  
+END;
 
 BEGIN
 END.

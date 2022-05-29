@@ -15,6 +15,7 @@ TYPE
 VAR
   TreeDepth: INTEGER;
   NotAddedTreeElementCount: INTEGER;
+  Root: Tree;
        
 IMPLEMENTATION
 

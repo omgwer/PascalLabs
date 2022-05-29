@@ -24,12 +24,14 @@ END;
 FUNCTION ToLowerCase(InputChar: CHAR): CHAR;
 VAR
   SH, SL: STRING;
+  Position: INTEGER;
 BEGIN
   SH:= 'QWERTYUIOPASDFGHJKLZXCVBNM‰–“Š…ƒ˜™‡•š”›‚€‹„†Ÿ—‘Œˆ’œğñ';
   SL:= 'qwertyuiopasdfghjklzxcvbnm©æãª¥­£èé§åêäë¢ ¯à®«¤¦íïçá¬¨âì¡î¥¥';
-  IF POS(InputChar, SH) <> 0
+  Position := POS(InputChar, SH);
+  IF Position <> 0
   THEN
-    ToLowerCase := SL[POS(InputChar, SH)]
+    ToLowerCase := SL[Position]
   ELSE
     ToLowerCase := InputChar;
 END;
@@ -95,7 +97,6 @@ BEGIN
   ELSE
     ComparisonWord := '<'
 END;
-
 
 BEGIN
 END.
