@@ -5,7 +5,7 @@ USES
   SharedData;
 
 FUNCTION GetWord(VAR Text: TEXT): Word;
-FUNCTION ComparisonWord(FirstWord: Word; SecondWord: Word): Word;
+FUNCTION ComparisonWord(FirstWord: Word; SecondWord: Word): CHAR;
 
 IMPLEMENTATION
 
@@ -13,7 +13,7 @@ FUNCTION IsWordChar(InputChar: CHAR): BOOLEAN;
 VAR
   AvailableChars: STRING;
 BEGIN
-  AvailableChars:= 'QWERTYUIOPASDFGHJKLZXCVBNMЙЦУКЕНГЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮЁёqwertyuiopasdfghjklzxcvbnmйцукенгшщзхъфывапролджэячсмитьбюee';
+  AvailableChars:= 'QWERTYUIOPASDFGHJKLZXCVBNMЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮЁёqwertyuiopasdfghjklzxcvbnmйцукенгшщзхъфывапролджэячсмитьбюee';
   IF (POS(InputChar, AvailableChars) <> 0)
   THEN
     IsWordChar:= TRUE
@@ -26,7 +26,7 @@ VAR
   SH, SL: STRING;
 BEGIN
   SH:= 'QWERTYUIOPASDFGHJKLZXCVBNMЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮЁё';
-  SL:= 'qwertyuiopasdfghjklzxcvbnmйцукенгшщзхъфывапролджэячсмитьбюee';
+  SL:= 'qwertyuiopasdfghjklzxcvbnmйцукенгшщзхъфывапролджэячсмитьбюее';
   IF POS(InputChar, SH) <> 0
   THEN
     ToLowerCase := SL[POS(InputChar, SH)]
@@ -83,17 +83,18 @@ BEGIN
     END
 END;
 
-// функция возвращает большую из подаваемых строк
-FUNCTION ComparisonWord(FirstWord: Word; SecondWord: Word): Word;
+// функция возвращает > < =
+FUNCTION ComparisonWord(FirstWord: Word; SecondWord: Word): CHAR;
 BEGIN
-  IF (FirstWord > SecondWord)
+  IF (FirstWord = SecondWord)
   THEN
-    ComparisonWord := FirstWord
+    ComparisonWord:= '='
+  ELSE IF (FirstWord > SecondWord)
+  THEN
+    ComparisonWord := '>'
   ELSE
-    ComparisonWord := SecondWord
+    ComparisonWord := '<'
 END;
-
-
 
 
 BEGIN
