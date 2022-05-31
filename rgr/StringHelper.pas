@@ -14,11 +14,7 @@ VAR
   AvailableChars: STRING;
 BEGIN
   AvailableChars:= 'QWERTYUIOPASDFGHJKLZXCVBNM‰–“Š…ƒ˜™‡•š”›‚€‹„†Ÿ—‘Œˆ’œğñqwertyuiopasdfghjklzxcvbnm©æãª¥­£èé§åêäë¢ ¯à®«¤¦íïçá¬¨âì¡îee';
-  IF (POS(InputChar, AvailableChars) <> 0)
-  THEN
-    IsWordChar:= TRUE
-  ELSE
-    IsWordChar:= FALSE
+  IsWordChar := POS(InputChar, AvailableChars) <> 0
 END;
 
 FUNCTION ToLowerCase(InputChar: CHAR): CHAR;
@@ -33,7 +29,7 @@ BEGIN
   THEN
     ToLowerCase := SL[Position]
   ELSE
-    ToLowerCase := InputChar;
+    ToLowerCase := InputChar
 END;
 
 // ”ã­ªæ¨ï ¢®§¢à é ¥â ®¤­® á«®¢® ¢ lowerCase

@@ -4,13 +4,16 @@ INTERFACE
 USES
   SharedData, StringHelper;
 
-PROCEDURE Insert(VAR Ptr:Tree; Data: Word);
-PROCEDURE PrintTree(Ptr: Tree);
+PROCEDURE InsertWord(Data: Word);
+PROCEDURE PrintAllTree();
 PROCEDURE InitData();
 PROCEDURE PrintOverflowError();
 
 IMPLEMENTATION
-
+VAR
+  TreeDepth: INTEGER;
+  NotAddedTreeElementCount: INTEGER;
+  Root: Tree;
 
 PROCEDURE Insert(VAR Ptr:Tree; Data: Word);
 VAR
@@ -49,7 +52,12 @@ BEGIN
           ELSE
             Insert(Ptr^.RLink, Data)
         END        
-    END; 
+    END
+END;
+
+PROCEDURE InsertWord(Data: Word);
+BEGIN
+  Insert(Root, Data);
 END;
 
 PROCEDURE PrintTree(Ptr: Tree);
@@ -60,21 +68,25 @@ BEGIN {PrintTree}
       PrintTree(Ptr^.LLink);
       WRITELN(OUTPUT,Ptr^.Key, ' ', Ptr^.Count);
       PrintTree(Ptr^.RLink)
-    END; 
+    END 
 END;  {PrintTree} 
 
-PROCEDURE InitData();
+PROCEDURE PrintAllTree();
 BEGIN
-  Root := NIL;
+  PrintTree(Root)
+END;
+
+PROCEDURE InitData();
+BEGIN  
   TreeDepth := 0;
-  NotAddedTreeElementCount := 0;
+  NotAddedTreeElementCount := 0
 END;
 
 PROCEDURE PrintOverflowError();
 BEGIN
   IF NotAddedTreeElementCount > 0
   THEN
-    WRITELN('Elements not added for tree - ', NotAddedTreeElementCount);  
+    WRITELN('Elements not added for tree - ', NotAddedTreeElementCount)  
 END;
 
 BEGIN

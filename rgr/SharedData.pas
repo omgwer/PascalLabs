@@ -12,10 +12,6 @@ TYPE
               Count: INTEGER;
               LLink, RLink: Tree
             END;
-VAR
-  TreeDepth: INTEGER;
-  NotAddedTreeElementCount: INTEGER;
-  Root: Tree;
        
 IMPLEMENTATION
 
