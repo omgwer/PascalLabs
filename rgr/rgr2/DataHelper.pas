@@ -15,6 +15,11 @@ VAR
   NotAddedTreeElementCount: INTEGER;
   Root: Tree;
 
+PROCEDURE MergeBranchToFile(Ptr: Tree; TreeDepth: INTEGER;VAR OutText: Text);
+BEGIN
+  WRITELN(OutText, 'kek');
+END;
+
 PROCEDURE Insert(VAR Ptr:Tree; Data: Word);
 VAR
   Overflow: BOOLEAN;
@@ -38,7 +43,10 @@ BEGIN
               Ptr^.RLink := NIL
             END
           ELSE
-            NotAddedTreeElementCount := NotAddedTreeElementCount + 1;   
+            BEGIN
+              NotAddedTreeElementCount := NotAddedTreeElementCount + 1;
+              MergeBranchToFile(Root, TreeDepth, OUTPUT);
+            END;
         END
       ELSE
         BEGIN
@@ -88,6 +96,19 @@ BEGIN
   THEN
     WRITELN('Elements not added for tree - ', NotAddedTreeElementCount)  
 END;
+
+
+// Возможно можно заменить GetKey на GetWord. Переписать функцию
+// Мерджим дерево в выходной файл 
+FUNCTION GetKey();
+BEGIN
+END;
+
+FUNCTION GetValue(): INTEGER;
+BEGIN
+END;
+
+
 
 BEGIN
 END.

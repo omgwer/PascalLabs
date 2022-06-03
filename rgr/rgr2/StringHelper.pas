@@ -56,7 +56,17 @@ BEGIN
       THEN      
         IF (IsWordChar(Ch)) 
         THEN          
-          State := 'W';          
+          State := 'W'
+        ELSE IF (Ch = '-') // для кейса "1998-ом" году. если встретили дефис игнорируем все "буквы" до не буквы.
+        THEN      
+          WHILE NOT EOLN(Text)
+          DO
+            BEGIN
+              READ(Text, Ch);
+              IF (NOT IsWordChar(Ch))
+              THEN
+                BREAK
+            END;                                
       IF State = 'W'
       THEN
         BEGIN          
@@ -68,12 +78,25 @@ BEGIN
             BEGIN
               IF (NOT EOLN(Text))
               THEN
-                READ(Text, Ch);
-                IF (IsWordChar(Ch))
-                THEN
-                  GetWord := GetWord + '-' + ToLowerCase(Ch)
-                ELSE
-                  State := 'F'  
+                BEGIN
+                  READ(Text, Ch);
+                  IF (IsWordChar(Ch))
+                  THEN
+                    GetWord := GetWord + '-' + ToLowerCase(Ch)
+                  ELSE
+                    State := 'F'
+                END      
+              ELSE IF (EOLN(Text)) AND NOT (EOF(Text))
+              THEN
+                BEGIN
+                  READLN(Text);
+                  READ(Text, Ch);
+                  IF (IsWordChar(Ch))
+                  THEN
+                    GetWord := GetWord + '-' + ToLowerCase(Ch)
+                  ELSE
+                    State := 'F'
+                END      
             END
           ELSE
             State := 'F'
