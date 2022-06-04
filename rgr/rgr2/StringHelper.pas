@@ -4,8 +4,8 @@ INTERFACE
 USES
   SharedData;
 
-FUNCTION GetWord(VAR Text: TEXT): Word;
-FUNCTION ComparisonWord(FirstWord: Word; SecondWord: Word): CHAR;
+FUNCTION GetWord(VAR Text: TEXT): ValidWord;
+FUNCTION ComparisonWord(FirstWord: ValidWord; SecondWord: ValidWord): CHAR;
 
 IMPLEMENTATION
 
@@ -33,7 +33,7 @@ BEGIN
 END;
 
 // Функция возвращает одно слово в lowerCase
-FUNCTION GetWord(VAR Text: TEXT): Word;
+FUNCTION GetWord(VAR Text: TEXT): ValidWord;
 VAR
   Ch: CHAR;
   State: CHAR; // S - search, W - work, F - finish
@@ -105,7 +105,7 @@ BEGIN
 END;
 
 // функция возвращает > < =
-FUNCTION ComparisonWord(FirstWord: Word; SecondWord: Word): CHAR;
+FUNCTION ComparisonWord(FirstWord: ValidWord; SecondWord: ValidWord): CHAR;
 BEGIN
   IF (FirstWord = SecondWord)
   THEN

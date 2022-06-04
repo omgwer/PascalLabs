@@ -4,7 +4,7 @@ USES
 
 PROCEDURE CountWords(VAR InputText: Text);
 VAR
-  NewWord: Word;
+  NewWord: ValidWord;
 BEGIN
   WHILE NOT (EOF(InputText))
   DO
@@ -19,6 +19,5 @@ END;
 BEGIN  
   InitData();
   CountWords(INPUT);
-  PrintAllTree();
-  PrintOverflowError();  
-END.
+  PrintAllTree();   
+END. 
