@@ -20,4 +20,4 @@ BEGIN
   InitData();
   CountWords(INPUT);
   PrintAllTree();
-END. 
+END.      
