@@ -19,5 +19,5 @@ END;
 BEGIN  
   InitData();
   CountWords(INPUT);
-  PrintAllTree();   
+  PrintAllTree();
 END. 
