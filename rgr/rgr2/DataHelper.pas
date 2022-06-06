@@ -233,10 +233,10 @@ BEGIN
               Ptr^.RLink := NIL
             END
           ELSE
-            BEGIN
+            BEGIN              
               REWRITE(SharedFile);
-              RESET(OutFile);        
-              MergeTree(Root, SharedFile, OutFile); // мерджим Root + OutFile => SharedFile
+              RESET(OutFile);                      
+              MergeTree(Root, SharedFile, OutFile); // мерджим Root + OutFile => SharedFile 
               PrintFile(OutFile, SharedFile);  // дозаписываем остататки sharedFile
               CleanupTree(Root);
               SwapName();
@@ -296,12 +296,12 @@ BEGIN
   REWRITE(SharedFile);
   RESET(OutFile);
   MergeTree(Root, SharedFile, OutFile);  // сливаем дерево и выходной файл в шару
-  PrintFile(OutFile, SharedFile);  // дозаписываем outFile в SharedFile
-  CleanupTree(Root);  // чистим дерево
-  SwapName();
-  Close(OutFile);  
-//  Отлажено и работает.  
-  PrintSharedForFile(OutFile, OUTPUT)
+  Close(SharedFile);
+  // TODO потерялся testk ?
+  //PrintFile(OutFile, SharedFile);  // дозаписываем outFile в SharedFile
+  //CleanupTree(Root);  // чистим дерево
+  //SwapName();
+  //PrintSharedForFile(OutFile, OUTPUT)
 END;
 
 PROCEDURE InitData();
@@ -313,7 +313,7 @@ BEGIN
   MaxKey := 'a';
   BeforeFileKey := '';
   REWRITE(SharedFile);
-  REWRITE(OutFile);
+  //REWRITE(OutFile);
   RESET(OutFile);
   OneInit := TRUE;
 END;
