@@ -18,7 +18,6 @@ VAR
   OutFileKey: STRING;
   OutFileValue: INTEGER;
   OneInit: BOOLEAN;
-
  
 
 PROCEDURE CleanupTree(Ptr: Tree);
