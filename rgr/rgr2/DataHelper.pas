@@ -90,7 +90,10 @@ BEGIN
             END;
         END;
 
-      IF (Key < OutFileKey) OR (OutFileKey = '') OR (OutFileValue < 0)
+      IF (OutFileKey = '') OR (OutFileValue < 0)
+      THEN
+        PrintFullTree(Ptr, SharedFile)
+      ELSE IF (Key < OutFileKey)
       THEN
         BEGIN
           //WRITELN(SharedFile, '  Step < ', MinKey,' ', MaxKey, ' ', OutFileKey, ' ', Key, ' ', BeforeFileKey);
@@ -149,11 +152,12 @@ BEGIN
                   MaxKey := OutFileKey; 
                 END;                
             END;
+          WRITELN(SharedFile, Key, ' ', Count);
           //WRITELN(SharedFile, '  EndStep >', MinKey,' ', MaxKey, ' ', OutFileKey, ' ', Key);
         END      
       END
   ELSE
-   // WRITELN(SharedFile, '  Step EOF');   
+    //WRITELN(SharedFile, '  Step EOF');   
     PrintFullTree(Ptr, SharedFile);    
 END;
 
@@ -171,6 +175,7 @@ END;
 
 PROCEDURE SwapName();
 BEGIN
+  RESET(SharedFile);
   Close(SharedFile);
   Close(OutFile);
   Rename(SharedFile, 'data/ch.txt');
@@ -232,12 +237,14 @@ BEGIN
               Ptr^.RLink := NIL
             END
           ELSE
-            BEGIN              
+            BEGIN   
               REWRITE(SharedFile);
               RESET(OutFile);                      
               MergeTree(Root, SharedFile, OutFile); // мерджим Root + OutFile => SharedFile 
               PrintFile(OutFile, SharedFile);  // дозаписываем остататки sharedFile
               CleanupTree(Root);
+              Reset(SharedFile); // - debug
+              REWRITE(OutFile);  // - debug
               SwapName();
               TreeDepth := 0;
               Root := NIL;
@@ -292,15 +299,15 @@ PROCEDURE PrintAllTree();
 VAR
   Ch: CHAR;
 BEGIN
-  REWRITE(SharedFile);
+  REWRITE(SharedFile);  
   RESET(OutFile);
   MergeTree(Root, SharedFile, OutFile);  // сливаем дерево и выходной файл в шару
+  PrintFile(OutFile, SharedFile);  // дозаписываем outFile в SharedFile
+  CleanupTree(Root);  // чистим дерево
   Close(SharedFile);
-  // TODO потерялся testk ?
-  //PrintFile(OutFile, SharedFile);  // дозаписываем outFile в SharedFile
-  //CleanupTree(Root);  // чистим дерево
-  //SwapName();
-  //PrintSharedForFile(OutFile, OUTPUT)
+  SwapName();
+  RESET(OutFile);
+  PrintSharedForFile(OutFile, OUTPUT);
 END;
 
 PROCEDURE InitData();
@@ -312,7 +319,7 @@ BEGIN
   MaxKey := 'a';
   BeforeFileKey := '';
   REWRITE(SharedFile);
-  //REWRITE(OutFile);
+  REWRITE(OutFile);
   RESET(OutFile);
   OneInit := TRUE;
 END;

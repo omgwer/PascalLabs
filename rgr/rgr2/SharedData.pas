@@ -3,7 +3,7 @@ UNIT SharedData;
 INTERFACE
 CONST
   MaxWordLength = 50;
-  MaxTreeDepth = 5000;
+  MaxTreeDepth = 100;
 TYPE
   ValidWord = STRING[MaxWordLength];
   Tree = ^NodeType;
