@@ -1,6 +1,6 @@
 PROGRAM CountWords(INPUT, OUTPUT);
 USES
-  StringHelper, DataHelper, SharedData;  
+  StringHelper, DataHelper, SharedData, StackHelper;  
 
 PROCEDURE CountWords(VAR InputText: Text);
 VAR
@@ -16,8 +16,8 @@ BEGIN
     END  
 END;
   
-BEGIN  
+BEGIN 
   InitData();
   CountWords(INPUT);
-  PrintAllTree();
+  PrintAllTree();  
 END.      

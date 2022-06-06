@@ -15,15 +15,15 @@ BEGIN {InsertSort2}
     BEGIN
       NEW(NewPtr);
       READ(NewPtr^.Key);
-      Prev := NIL;
+     // Prev := NIL;
       Curr := FirstPtr;
       {2.1.1 Найдем значение Prev и Curr, такие что Prev^.Key <= NewPtr^.Key <= Curr^.Key}
       NewPtr^.Next := Curr;
-      IF Prev = NIL 
-      THEN
+     // IF Prev = NIL 
+     // THEN
         FirstPtr := NewPtr
-      ELSE
-        Prev^.Next := NewPtr
+     // ELSE
+       // Prev^.Next := NewPtr
     END;
   NewPtr := FirstPtr;
   WHILE NewPtr <> NIL
