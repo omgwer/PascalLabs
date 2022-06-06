@@ -1,8 +1,5 @@
-abba 2
+abba 1
 abracadarbra 1
-helpme 1
-test 1
-тест 1
 тестк 1
-тесткек 2
-яллялу 2
+тесткек 1
+яллялу 1
