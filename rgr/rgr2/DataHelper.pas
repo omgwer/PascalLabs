@@ -252,18 +252,14 @@ BEGIN
       NewWord := GetWord(InsertText);
       IF NewWord <> ''
       THEN        
-        Insert(Root, NewWord, TreeDepth, SharedFile, OutFile)                
+        Insert(Root, NewWord, TreeDepth, SharedFile, OutFile);
+      IF TreeDepth = 0
+      THEN
+        Insert(Root, NewWord, TreeDepth, SharedFile, OutFile);                 
     END;
   PrintData(Root, OutputFile,  SharedFile, OutFile); 
 END;
 
-// // BEGIN
-//   MergeTreeToFile(Ptr, SharedFile, OutFile);
-//   CleanupTree(Ptr);
-//   SwapFileNames(OutFile, SharedFile);
-//   TreeDepth := 0;
-//   Ptr := NIL;              
-// // END 
 
 
 
