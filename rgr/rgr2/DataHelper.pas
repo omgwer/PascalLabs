@@ -10,22 +10,15 @@ PROCEDURE InitData();
 
 IMPLEMENTATION
 VAR
-  TreeDepth, BeforeFileValue: INTEGER;
+  TreeDepth: INTEGER;
   Root: Tree;
   SharedFile: TEXT;
   OutFile: TEXT;
-  MinKey, MaxKey, BeforeFileKey: STRING;   
-  OneInit: BOOLEAN;
 
   OutFileKey: STRING;
   OutFileValue: INTEGER; 
-
-  MinValue: STRING;
-  MaxValue: STRING;
-  MaxValueCount: INTEGER;
   ReadyToPush: BOOLEAN;
   State: STRING;
- 
 
 PROCEDURE CleanupTree(Ptr: Tree);
 BEGIN
@@ -38,39 +31,6 @@ BEGIN
     END;
   Ptr := NIL
 END;
-
-// MinKey - минимальное значение в дереве, которое уже обработано.
-// MaxKey - значение из файла, return (MinKey, MaxKey)
-PROCEDURE PrintTree(Ptr: Tree; VAR OutFile: Text;VAR MinKey: String;VAR MaxKey: String);
-BEGIN
- IF Ptr <> NIL
-  THEN  {Печатает поддерево слева, вершину, поддерево справа}
-    BEGIN      
-      IF (Ptr^.Key > MinKey)
-      THEN        
-          PrintTree(Ptr^.LLink , OutFile, MinKey, MaxKey); 
-      IF (Ptr^.Key > MinKey) AND (Ptr^.Key < MaxKey)
-      THEN
-        BEGIN
-          WRITELN(OutFile, Ptr^.Key, ' ', Ptr^.Count);
-          MinKey := Ptr^.Key;
-        END;
-      IF (Ptr^.Key < MaxKey)
-      THEN
-        PrintTree(Ptr^.RLink, OutFile,MinKey, MaxKey);      
-    END 
-END; 
-
-PROCEDURE PrintFullTree(Ptr: Tree; VAR OutFile: Text);
-BEGIN
- IF Ptr <> NIL
-  THEN  {Печатает поддерево слева, вершину, поддерево справа}
-    BEGIN            
-      PrintTree(Ptr^.LLink , OutFile, MinKey, MaxKey); 
-      WRITELN(OutFile, Ptr^.Key, ' ', Ptr^.Count);
-      PrintTree(Ptr^.RLink, OutFile,MinKey, MaxKey);      
-    END 
-END; 
 
 // Печатает все строки меньше чем в дереве.
 PROCEDURE PrintLowestFileValues(VAR SharedFile: TEXT; VAR MaxTreeValue: STRING; VAR MaxTreeCount: INTEGER);
@@ -138,8 +98,8 @@ BEGIN
               END
             ELSE
               WRITELN(SharedFile, Ptr^.Key, ' ',Ptr^.Count); 
-          END;         
-        IF ( OutFileKey = Ptr^.Key) // строка из файла ==
+          END        
+        ELSE IF ( OutFileKey = Ptr^.Key) // строка из файла ==
         THEN
           BEGIN
             WRITELN(SharedFile, Ptr^.Key, ' ',Ptr^.Count + OutFileValue);
@@ -153,7 +113,7 @@ BEGIN
         THEN
           BEGIN
             MergeTree(Ptr^.RLink, SharedFile);
-          END;              
+          END;          
         END
       ELSE
         BEGIN
@@ -253,21 +213,6 @@ BEGIN
               TreeDepth := 0;
               Root := NIL;
               ReadyToPush:= FALSE;
-
-              // REWRITE(SharedFile);
-              // RESET(OutFile);                                                
-              // MergeTree(Root, SharedFile, OutFile); // мерджим Root + OutFile => SharedFile 
-              // PrintFile(OutFile, SharedFile);  // дозаписываем остататки sharedFile
-              // CleanupTree(Root);
-              // Reset(SharedFile); // - debug
-              // REWRITE(OutFile);  // - debug
-              // SwapName();
-              // TreeDepth := 0;
-              // Root := NIL;
-              // OneInit := TRUE;  //otladka
-              // MinKey := 'a';  //otladka
-              // MaxKey := 'a';  //otladka
-              // BeforeFileKey := '';  //otladka
             END         
         END
       ELSE
@@ -338,13 +283,9 @@ BEGIN
   Assign(SharedFile,'data/shared.txt');
   Assign(OutFile,'data/out.txt');
   TreeDepth := 0;
-  MinKey := 'a';  
-  MaxKey := 'a';
-  BeforeFileKey := '';
   REWRITE(SharedFile);
-  //REWRITE(OutFile);
+  REWRITE(OutFile);
   RESET(OutFile);
-  OneInit := TRUE;
   InitStack();
   ReadyToPush:= FALSE;
 END;
@@ -352,8 +293,3 @@ END;
 BEGIN
 END.
 
-abba 1
-abracadarbra 1
-тестк 1
-тесткек 1
-яллялу 1
