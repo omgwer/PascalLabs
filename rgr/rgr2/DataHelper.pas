@@ -70,61 +70,42 @@ BEGIN
       THEN
         BEGIN
         IF ReadyToPush AND ( OutFileKey > Ptr^.Key )  // после первого прохождения до низа ветки, нужно подготовить стэк.
-        THEN
+        THEN                                          // каждый раз, когда движемся в левую ветку, пушим в стэк
           Push(Ptr^.Key, Ptr^.Count);
 
         MergeTree(Ptr^.LLink, SharedFile, OutFile, State, OutFileKey, OutFileValue, ReadyToPush);
 
         IF NOT ReadyToPush AND ( OutFileKey > Ptr^.Key)  // печать самого первого элемента
-        THEN
-          BEGIN
-            WRITELN(SharedFile, Ptr^.Key, ' ', Ptr^.Count); 
-          END;
+        THEN                                             // при первой проходке пушить в стэк нельзя, печатаем только самое маленькое значение
+          WRITELN(SharedFile, Ptr^.Key, ' ', Ptr^.Count);           
 
-        IF ReadyToPush AND (Ptr^.LLink = NIL)
-        THEN
-          BEGIN     
-            PrintStackForFile(SharedFile);        
-          END;        
-        ReadyToPush := TRUE;
+        IF ReadyToPush AND (Ptr^.LLink = NIL) // если дошли до конца левой ветки, пушим в стэк в файл
+        THEN              
+          PrintStackForFile(SharedFile);  
+
+        ReadyToPush := TRUE;  // После первого дохождения до конца влево, разрешается пушить в стэк.
       
-        IF ( OutFileKey < Ptr^.Key ) // элемент в файле меньше
-        THEN
-          BEGIN            
-              PrintLowestFileValues(SharedFile, OutFile, Ptr^.Key, OutFileKey, State, OutFileValue);
-            // IF ( OutFileKey = Ptr^.Key) // строка из файла ==
-            // THEN
-            //   BEGIN
-            //     WRITELN(SharedFile, Ptr^.Key, ' ',Ptr^.Count + OutFileValue);
-            //     OutFileKey := GetWord(OutFile);
-            //     IF OutFileKey = ''
-            //     THEN
-            //       State := 'E';
-            //     OutFileValue := GetValue(OutFile)
-            //   END
-            // ELSE
-            //   WRITELN(SharedFile, Ptr^.Key, ' ',Ptr^.Count); 
-          END;        
+        IF ( OutFileKey < Ptr^.Key ) // элемент в файле меньше, записываем строки из файла, пока они меньше ключа указателя
+        THEN                    
+          PrintLowestFileValues(SharedFile, OutFile, Ptr^.Key, OutFileKey, State, OutFileValue); 
         IF ( OutFileKey = Ptr^.Key) // строка из файла ==
         THEN
           BEGIN
             WRITELN(SharedFile, Ptr^.Key, ' ',Ptr^.Count + OutFileValue);
             OutFileKey := GetWord(OutFile);
             IF OutFileKey = ''
-                THEN
-                  State := 'E';
+            THEN
+              State := 'E';
             OutFileValue := GetValue(OutFile)
           END;
         IF ( OutFileKey > Ptr^.Key) // строка из файла больше чем в дереве  
         THEN
-          BEGIN
-            MergeTree(Ptr^.RLink, SharedFile, OutFile, State, OutFileKey, OutFileValue, ReadyToPush);
-          END;          
+          MergeTree(Ptr^.RLink, SharedFile, OutFile, State, OutFileKey, OutFileValue, ReadyToPush)                    
         END
       ELSE
         BEGIN          
-          PrintTree(Ptr, OutFile);
-        END;       
+          PrintTree(Ptr, OutFile)
+        END       
     END
 END; 
 
@@ -160,11 +141,14 @@ BEGIN
   OutFileKey := GetWord(OutFile);
   OutFileValue := GetValue(OutFile);
   IF OutFileKey = ''
-  THEN   
-    PrintTree(Root, SharedFile)    
+  THEN
+    BEGIN   
+      PrintTree(Root, SharedFile);
+      State := 'E'
+    END    
   ELSE
     MergeTree(Root, SharedFile, OutFile, State, OutFileKey, OutFileValue, ReadyToPush);  
-  IF State <> 'E'
+  IF (State <> 'E')
   THEN
     BEGIN
       WRITELN(SharedFile, OutFileKey, ' ', OutFileValue);
