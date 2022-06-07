@@ -2,7 +2,6 @@ Unit StackHelper;
 
 INTERFACE
 
-PROCEDURE InitStack();
 PROCEDURE Push(Key: STRING; Count: INTEGER);
 PROCEDURE PrintStackForFile(VAR SharedFile: TEXT);
 
@@ -15,13 +14,7 @@ TYPE
            Count: INTEGER;
          END;
 VAR
-  FirstPtr, NewPtr, Curr, Prev: NodePtr;
-  IsInit: BOOLEAN;
-
-PROCEDURE InitStack();
-BEGIN
-  FirstPtr := NIL;
-END;
+  FirstPtr, NewPtr, Curr, Prev: NodePtr;  
 
 PROCEDURE Push(Key: STRING; Count: INTEGER);
 BEGIN
@@ -33,37 +26,23 @@ BEGIN
   FirstPtr := NewPtr   
 END;
 
-PROCEDURE Print(NewPtr: NodePtr; VAR SharedFile: TEXT);
-BEGIN
-  NewPtr := FirstPtr;
-  WHILE NewPtr <> NIL
-  DO
-    BEGIN
-      WRITELN(SharedFile, NewPtr^.Key, ' ', NewPtr^.Count);          
-      NewPtr := NewPtr^.Next;     
-    END
-END;
-
-PROCEDURE ClearStack(var Stack : NodePtr);
+PROCEDURE Pop(VAR FirstPtr: NodePtr; VAR SharedFile: TEXT);
 VAR
-  StackElement : NodePtr;
+  NewPtr: NodePtr;
 BEGIN
-  WHILE Stack <> NIL 
-  DO 
-    BEGIN
-    StackElement := Stack;
-    Stack := Stack^.Next;
-    Dispose(StackElement)
-    END
+  NewPtr := FirstPtr;  
+  WRITELN(SharedFile, NewPtr^.Key, ' ', NewPtr^.Count);
+  FirstPtr := NewPtr^.Next;       
+  Dispose(NewPtr)    
 END;
 
 PROCEDURE PrintStackForFile(VAR SharedFile: TEXT);
 BEGIN
-  Print(NewPtr, SharedFile);
-  ClearStack(FirstPtr)  
+  WHILE FirstPtr <> NIL
+  DO
+    Pop(FirstPtr, SharedFile);
 END;
 
-
-
-BEGIN  
+BEGIN
+  FirstPtr := NIL;  
 END.

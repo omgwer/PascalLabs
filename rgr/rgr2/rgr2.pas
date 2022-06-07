@@ -1,23 +1,8 @@
 PROGRAM CountWords(INPUT, OUTPUT);
 USES
-  StringHelper, DataHelper, SharedData, StackHelper;  
+  DataHelper; 
 
-PROCEDURE CountWords(VAR InputText: Text);
-VAR
-  NewWord: ValidWord;
-BEGIN
-  WHILE NOT (EOF(InputText))
-  DO
-    BEGIN
-      NewWord := GetWord(InputText);
-      IF NewWord <> ''
-      THEN
-        InsertWord(NewWord)
-    END  
-END;
-  
-BEGIN 
-  InitData();
-  CountWords(INPUT);
-  PrintAllTree();  
+BEGIN  
+  InsertData(INPUT);
+  PrintData(OUTPUT);  
 END.      

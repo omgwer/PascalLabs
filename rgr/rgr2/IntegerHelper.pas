@@ -1,8 +1,6 @@
 Unit IntegerHelper;
 
 INTERFACE
-USES
-  SharedData;
 
 FUNCTION GetValue(VAR inpFile: Text): INTEGER;
 

@@ -2,7 +2,7 @@ PROGRAM CountWords(INPUT, OUTPUT);
 USES
   StringHelper, DataHelper, SharedData;  
 
-PROCEDURE CountWords(InputText: Text);
+PROCEDURE CountWords(VAR InputText: Text);
 VAR
   NewWord: Word;
 BEGIN

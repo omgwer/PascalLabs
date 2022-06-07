@@ -5,7 +5,6 @@ USES
   SharedData;
 
 FUNCTION GetWord(VAR Text: TEXT): ValidWord;
-FUNCTION ComparisonWord(FirstWord: ValidWord; SecondWord: ValidWord): CHAR;
 
 IMPLEMENTATION
 
@@ -102,19 +101,6 @@ BEGIN
             State := 'F'
         END            
     END
-END;
-
-// функция возвращает > < =
-FUNCTION ComparisonWord(FirstWord: ValidWord; SecondWord: ValidWord): CHAR;
-BEGIN
-  IF (FirstWord = SecondWord)
-  THEN
-    ComparisonWord:= '='
-  ELSE IF (FirstWord > SecondWord)
-  THEN
-    ComparisonWord := '>'
-  ELSE
-    ComparisonWord := '<'
 END;
 
 BEGIN

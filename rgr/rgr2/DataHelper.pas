@@ -4,9 +4,8 @@ INTERFACE
 USES
   SharedData, StringHelper, IntegerHelper, StackHelper;
 
-PROCEDURE InsertWord(Data: ValidWord);
-PROCEDURE PrintAllTree();
-PROCEDURE InitData();
+PROCEDURE InsertData(VAR InsertText: Text);
+PROCEDURE PrintData(VAR OutputFile: Text);  
 
 IMPLEMENTATION
 VAR
@@ -124,7 +123,7 @@ BEGIN
     END
 END;
 
-PROCEDURE MergeForSharedFile(Ptr: Tree; Key: STRING; Count: INTEGER; VAR SharedFile: Text; VAR OutFile: Text );
+PROCEDURE MergeTreeForSharedFile(Ptr: Tree; Key: STRING; Count: INTEGER; VAR SharedFile: Text; VAR OutFile: Text );
 BEGIN
 END;
 
@@ -216,23 +215,17 @@ BEGIN
             END         
         END
       ELSE
-        BEGIN
-          ComparisonResult := ComparisonWord(Ptr^.Key, Data);
-          IF ComparisonResult = '='
+        BEGIN          
+          IF Ptr^.Key = Data
           THEN
             Ptr^.Count:= Ptr^.Count + 1
-          ELSE IF ComparisonResult = '>'
+          ELSE IF Ptr^.Key > Data
           THEN
             Insert(Ptr^.LLink, Data)
           ELSE
             Insert(Ptr^.RLink, Data)
         END        
     END
-END;
-
-PROCEDURE InsertWord(Data: ValidWord);
-BEGIN
-  Insert(Root, Data); 
 END;
 
 PROCEDURE PrintSharedForFile(VAR SharedFile: TEXT; VAR OutFile: TEXT);
@@ -278,7 +271,25 @@ BEGIN
   PrintSharedForFile(OutFile, OUTPUT);
 END;
 
-PROCEDURE InitData();
+PROCEDURE InsertData(VAR InsertText: Text);
+VAR
+  NewWord: ValidWord;
+BEGIN
+  WHILE NOT (EOF(InsertText))
+  DO
+    BEGIN
+      NewWord := GetWord(InsertText);
+      IF NewWord <> ''
+      THEN
+        Insert(Root, NewWord);
+    END  
+END;
+
+PROCEDURE PrintData(VAR OutputFile: Text); 
+BEGIN
+  
+END;
+
 BEGIN
   Assign(SharedFile,'data/shared.txt');
   Assign(OutFile,'data/out.txt');
@@ -286,10 +297,6 @@ BEGIN
   REWRITE(SharedFile);
   REWRITE(OutFile);
   RESET(OutFile);
-  InitStack();
-  ReadyToPush:= FALSE;
-END;
-
-BEGIN
+  ReadyToPush:= FALSE;  
 END.
 
