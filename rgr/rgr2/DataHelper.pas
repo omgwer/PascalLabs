@@ -97,10 +97,10 @@ BEGIN
             THEN
               State := 'E';
             OutFileValue := GetValue(OutFile)
-          END;
+          END;          
         IF ( OutFileKey > Ptr^.Key) // строка из файла больше чем в дереве  
-        THEN
-          MergeTree(Ptr^.RLink, SharedFile, OutFile, State, OutFileKey, OutFileValue, ReadyToPush)                    
+        THEN                     
+          MergeTree(Ptr^.RLink, SharedFile, OutFile, State, OutFileKey, OutFileValue, ReadyToPush);                               
         END
       ELSE
         BEGIN          
@@ -179,7 +179,7 @@ BEGIN
               Ptr^.RLink := NIL
             END
           ELSE
-            BEGIN              
+            BEGIN
               MergeTreeToFile(Ptr, SharedFile, OutFile);
               CleanupTree(Ptr);
               SwapFileNames(OutFile, SharedFile);
@@ -251,11 +251,20 @@ BEGIN
     BEGIN
       NewWord := GetWord(InsertText);
       IF NewWord <> ''
-      THEN
-        Insert(Root, NewWord, TreeDepth, SharedFile, OutFile)
+      THEN        
+        Insert(Root, NewWord, TreeDepth, SharedFile, OutFile)                
     END;
   PrintData(Root, OutputFile,  SharedFile, OutFile); 
 END;
+
+// // BEGIN
+//   MergeTreeToFile(Ptr, SharedFile, OutFile);
+//   CleanupTree(Ptr);
+//   SwapFileNames(OutFile, SharedFile);
+//   TreeDepth := 0;
+//   Ptr := NIL;              
+// // END 
+
 
 
 BEGIN  

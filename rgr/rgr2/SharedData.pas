@@ -3,7 +3,7 @@ UNIT SharedData;
 INTERFACE
 CONST
   MaxWordLength = 50;
-  MaxTreeDepth = 10000;
+  MaxTreeDepth = 9000;
 TYPE
   ValidWord = STRING[MaxWordLength];
   Tree = ^NodeType;
@@ -11,8 +11,7 @@ TYPE
               Key: ValidWord;
               Count: INTEGER;
               LLink, RLink: Tree
-            END;
-       
+            END;       
 IMPLEMENTATION
 
 BEGIN
