@@ -101,55 +101,59 @@ BEGIN
       IF State <> 'EOF'
       THEN
         BEGIN
-      IF ReadyToPush AND ( OutFileKey > Ptr^.Key )  // после первого прохождения до низа ветки, нужно подготовить стэк.
-      THEN
-        Push(Ptr^.Key, Ptr^.Count);
+        IF ReadyToPush AND ( OutFileKey > Ptr^.Key )  // после первого прохождения до низа ветки, нужно подготовить стэк.
+        THEN
+          Push(Ptr^.Key, Ptr^.Count);
 
-      MergeTree(Ptr^.LLink, SharedFile);
-      IF NOT ReadyToPush AND ( OutFileKey > Ptr^.Key)  // печать самого первого элемента
-      THEN
-        BEGIN
-          WRITELN(SharedFile, Ptr^.Key, ' ', Ptr^.Count); 
-        END;
-      IF ReadyToPush AND (Ptr^.LLink = NIL)
-      THEN
-        BEGIN     
-          PrintStackForFile(SharedFile);        
-        END;        
-      ReadyToPush := TRUE;
+        MergeTree(Ptr^.LLink, SharedFile);
+
+        IF NOT ReadyToPush AND ( OutFileKey > Ptr^.Key)  // печать самого первого элемента
+        THEN
+          BEGIN
+            WRITELN(SharedFile, Ptr^.Key, ' ', Ptr^.Count); 
+          END;
+
+        IF ReadyToPush AND (Ptr^.LLink = NIL)
+        THEN
+          BEGIN     
+            PrintStackForFile(SharedFile);        
+          END;        
+        ReadyToPush := TRUE;
       
-          IF ( OutFileKey < Ptr^.Key ) // элемент в файле меньше
-          THEN
-            BEGIN
+        IF ( OutFileKey < Ptr^.Key ) // элемент в файле меньше
+        THEN
+          BEGIN
+            IF (State <> 'EOF')
+            THEN
               PrintLowestFileValues(SharedFile, Ptr^.Key, Ptr^.Count);
-              IF ( OutFileKey = Ptr^.Key) // строка из файла ==
-              THEN
-                BEGIN
-                  WRITELN(SharedFile, Ptr^.Key, ' ',Ptr^.Count + OutFileValue);
-                  OutFileKey := GetWord(OutFile);
-                  IF OutFileKey = ''
-                  THEN
-                    State := 'EOF';
-                  OutFileValue := GetValue(OutFile)
-                END
-              ELSE
-                WRITELN(SharedFile, Ptr^.Key, ' ',Ptr^.Count); 
-            END;         
-          IF ( OutFileKey = Ptr^.Key) // строка из файла ==
-          THEN
-            BEGIN
-              WRITELN(SharedFile, Ptr^.Key, ' ',Ptr^.Count + OutFileValue);
-              OutFileKey := GetWord(OutFile);
-              IF OutFileKey = ''
-                  THEN
-                    State := 'EOF';
-              OutFileValue := GetValue(OutFile)
-            END;
-          IF ( OutFileKey > Ptr^.Key) // строка из файла больше чем в дереве  
-          THEN
-            BEGIN
-              MergeTree(Ptr^.RLink, SharedFile);
-            END;              
+            IF ( OutFileKey = Ptr^.Key) // строка из файла ==
+            THEN
+              BEGIN
+                WRITELN(SharedFile, Ptr^.Key, ' ',Ptr^.Count + OutFileValue);
+                OutFileKey := GetWord(OutFile);
+                IF OutFileKey = ''
+                THEN
+                  State := 'EOF';
+                OutFileValue := GetValue(OutFile)
+              END
+            ELSE
+              WRITELN(SharedFile, Ptr^.Key, ' ',Ptr^.Count); 
+          END;         
+        IF ( OutFileKey = Ptr^.Key) // строка из файла ==
+        THEN
+          BEGIN
+            WRITELN(SharedFile, Ptr^.Key, ' ',Ptr^.Count + OutFileValue);
+            OutFileKey := GetWord(OutFile);
+            IF OutFileKey = ''
+                THEN
+                  State := 'EOF';
+            OutFileValue := GetValue(OutFile)
+          END;
+        IF ( OutFileKey > Ptr^.Key) // строка из файла больше чем в дереве  
+        THEN
+          BEGIN
+            MergeTree(Ptr^.RLink, SharedFile);
+          END;              
         END
       ELSE
         BEGIN
@@ -229,7 +233,27 @@ BEGIN
               Ptr^.RLink := NIL
             END
           ELSE
-            BEGIN   
+            BEGIN
+              REWRITE(SharedFile);  
+              RESET(OutFile);
+              OutFileKey := GetWord(OutFile);
+              OutFileValue := GetValue(OutFile);
+              State := 'W';          // W - work , EOF - endOfFile
+              IF OutFileKey = ''
+              THEN
+                State := 'EOF';
+
+              MergeTree(Root, SharedFile);   // сливаем дерево и выходной файл в шару
+              PrintFile(OutFile, SharedFile);  // дозаписываем outFile в SharedFile
+              Close(SharedFile);
+              CleanupTree(Root);
+              Reset(SharedFile); // - debug
+              REWRITE(OutFile);  // - debug
+              SwapName();
+              TreeDepth := 0;
+              Root := NIL;
+              ReadyToPush:= FALSE;
+
               // REWRITE(SharedFile);
               // RESET(OutFile);                                                
               // MergeTree(Root, SharedFile, OutFile); // мерджим Root + OutFile => SharedFile 
@@ -300,17 +324,13 @@ BEGIN
   THEN
     State := 'EOF';
 
-  MergeTree(Root, SharedFile);
-  RESET(SharedFile);
-  PrintSharedForFile(SharedFile, OUTPUT);
-
-  // MergeTree(Root, SharedFile, OutFile);  // сливаем дерево и выходной файл в шару
-  // PrintFile(OutFile, SharedFile);  // дозаписываем outFile в SharedFile
-  // CleanupTree(Root);  // чистим дерево
-  //Close(SharedFile);
-  //SwapName();
-  //RESET(OutFile);
-  //PrintSharedForFile(OutFile, OUTPUT);
+  MergeTree(Root, SharedFile);   // сливаем дерево и выходной файл в шару
+  PrintFile(OutFile, SharedFile);  // дозаписываем outFile в SharedFile
+  Close(SharedFile);
+  CleanupTree(Root);
+  SwapName();
+  RESET(OutFile);
+  PrintSharedForFile(OutFile, OUTPUT);
 END;
 
 PROCEDURE InitData();
