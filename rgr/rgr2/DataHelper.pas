@@ -4,20 +4,9 @@ INTERFACE
 USES
   SharedData, StringHelper, IntegerHelper, StackHelper;
 
-PROCEDURE InsertData(VAR InsertText: Text);
-PROCEDURE PrintData(VAR OutputFile: Text);  
+PROCEDURE GetCountWordInfo(VAR InsertText, OutputFile: Text);
 
 IMPLEMENTATION
-VAR
-  TreeDepth: INTEGER;
-  Root: Tree;
-  SharedFile: TEXT;
-  OutFile: TEXT;
-
-  //OutFileKey: STRING;
-  //OutFileValue: INTEGER; 
-  ReadyToPush: BOOLEAN;
-  //State: STRING;
 
 PROCEDURE CleanupTree(Ptr: Tree);
 BEGIN
@@ -31,10 +20,8 @@ BEGIN
   Ptr := NIL
 END;
 
-PROCEDURE SwapName();
-BEGIN
-  RESET(OutFile);
-  RESET(SharedFile);
+PROCEDURE SwapFileNames(VAR OutFile, SharedFile: TEXT);
+BEGIN  
   Close(SharedFile);
   Close(OutFile);
   Rename(SharedFile, 'data/ch.txt');
@@ -46,9 +33,21 @@ BEGIN
   REWRITE(SharedFile);
 END;
 
+// Печать всего дерева по указателю
+PROCEDURE PrintTree(Ptr: Tree; VAR OutFile: TEXT);
+BEGIN
+  IF Ptr <> NIL
+  THEN
+    BEGIN
+      PrintTree(Ptr^.LLink, OutFile);
+      WRITELN(OutFile, Ptr^.Key, ' ',Ptr^.Count);
+      PrintTree(Ptr^.RLink,OutFile);
+    END;
+END; 
+
 // Печатает все строки меньше чем в дереве.
-PROCEDURE PrintLowestFileValues(VAR SharedFile: TEXT;VAR OutFile: TEXT; VAR MaxTreeValue: STRING;VAR OutFileKey:STRING;VAR State: STRING;VAR OutFileValue: INTEGER);
-BEGIN  
+PROCEDURE PrintLowestFileValues(VAR SharedFile, OutFile: TEXT; VAR MaxTreeValue, OutFileKey, State: STRING;VAR OutFileValue: INTEGER);
+BEGIN
   WHILE (MaxTreeValue > OutFileKey) AND (State <> 'E')
   DO
     BEGIN    
@@ -57,12 +56,12 @@ BEGIN
       IF OutFileKey = ''
       THEN
         State := 'E'
-      ELSE      
-      OutFileValue := GetValue(OutFile)
+      ELSE
+        OutFileValue := GetValue(OutFile)
     END    
 END;
 
-PROCEDURE MergeTree(Ptr: Tree; VAR SharedFile: TEXT; VAR OutFile: TEXT;VAR State: STRING; VAR OutFileKey: STRING; VAR OutFileValue: INTEGER);
+PROCEDURE MergeTree(Ptr: Tree; VAR SharedFile, OutFile: TEXT;VAR State, OutFileKey: STRING; VAR OutFileValue: INTEGER;VAR ReadyToPush: BOOLEAN);
 BEGIN
   IF Ptr <> NIL
   THEN
@@ -74,7 +73,7 @@ BEGIN
         THEN
           Push(Ptr^.Key, Ptr^.Count);
 
-        MergeTree(Ptr^.LLink, SharedFile, OutFile, State, OutFileKey, OutFileValue);
+        MergeTree(Ptr^.LLink, SharedFile, OutFile, State, OutFileKey, OutFileValue, ReadyToPush);
 
         IF NOT ReadyToPush AND ( OutFileKey > Ptr^.Key)  // печать самого первого элемента
         THEN
@@ -93,20 +92,20 @@ BEGIN
         THEN
           BEGIN            
               PrintLowestFileValues(SharedFile, OutFile, Ptr^.Key, OutFileKey, State, OutFileValue);
-            IF ( OutFileKey = Ptr^.Key) // строка из файла ==
-            THEN
-              BEGIN
-                WRITELN(SharedFile, Ptr^.Key, ' ',Ptr^.Count + OutFileValue);
-                OutFileKey := GetWord(OutFile);
-                IF OutFileKey = ''
-                THEN
-                  State := 'E';
-                OutFileValue := GetValue(OutFile)
-              END
-            ELSE
-              WRITELN(SharedFile, Ptr^.Key, ' ',Ptr^.Count); 
-          END        
-        ELSE IF ( OutFileKey = Ptr^.Key) // строка из файла ==
+            // IF ( OutFileKey = Ptr^.Key) // строка из файла ==
+            // THEN
+            //   BEGIN
+            //     WRITELN(SharedFile, Ptr^.Key, ' ',Ptr^.Count + OutFileValue);
+            //     OutFileKey := GetWord(OutFile);
+            //     IF OutFileKey = ''
+            //     THEN
+            //       State := 'E';
+            //     OutFileValue := GetValue(OutFile)
+            //   END
+            // ELSE
+            //   WRITELN(SharedFile, Ptr^.Key, ' ',Ptr^.Count); 
+          END;        
+        IF ( OutFileKey = Ptr^.Key) // строка из файла ==
         THEN
           BEGIN
             WRITELN(SharedFile, Ptr^.Key, ' ',Ptr^.Count + OutFileValue);
@@ -119,85 +118,64 @@ BEGIN
         IF ( OutFileKey > Ptr^.Key) // строка из файла больше чем в дереве  
         THEN
           BEGIN
-            MergeTree(Ptr^.RLink, SharedFile, OutFile, State, OutFileKey, OutFileValue);
+            MergeTree(Ptr^.RLink, SharedFile, OutFile, State, OutFileKey, OutFileValue, ReadyToPush);
           END;          
         END
       ELSE
-        BEGIN
-          MergeTree(Ptr^.LLink, SharedFile, OutFile, State, OutFileKey, OutFileValue);
-          WRITELN(SharedFile, Ptr^.Key, ' ',Ptr^.Count);
-          MergeTree(Ptr^.RLink, SharedFile, OutFile, State, OutFileKey, OutFileValue);
+        BEGIN          
+          PrintTree(Ptr, OutFile);
         END;       
     END
 END; 
 
-PROCEDURE PrintTree(Ptr: Tree; VAR OutFile: TEXT);
-BEGIN
-  IF Ptr <> NIL
-  THEN
-    BEGIN
-      PrintTree(Ptr^.LLink, OutFile);
-      WRITELN(OutFile, Ptr^.Key, ' ',Ptr^.Count);
-      PrintTree(Ptr^.RLink,OutFile);
-    END;
-END; 
-
-PROCEDURE AppendLostOfOutFile(VAR OutFile: TEXT; VAR SharedFile: TEXT; VAR State: STRING;VAR OutFileKey: STRING;VAR OutFileValue: INTEGER);
+//дозапись в shared, если outFile не пустой
+PROCEDURE AppendLostOfOutFile(VAR OutFile, SharedFile: TEXT); 
 VAR
-  Ch: CHAR;
-  Init: BOOLEAN;
-BEGIN
-  Init:= TRUE; // otladka do etogo bylo FALSE
-  IF (OutFileKey <> '')
-  THEN
-    WRITELN(SharedFile, OutFileKey, ' ', OutFileValue);
-  WHILE NOT EOF(OutFile)
-  DO
-    BEGIN
-      IF (EOLN(OutFile))
-      THEN
-        BEGIN
-          READLN(OutFile);
-          IF Init
-          THEN
-            WRITELN(SharedFile)
-          ELSE
-            Init := TRUE;         
-        END;        
-      READ(OutFile, Ch);
-      WRITE(SharedFile, Ch) 
-    END
-END;
-
-PROCEDURE MergeTreeToFile(Root: Tree; VAR SharedFile: TEXT; VAR OutFile: TEXT);
-VAR
-  State, OutFileKey: STRING; // W - work, E - empyFile
+  OutFileKey: STRING;
   OutFileValue: INTEGER;
 BEGIN
+  WHILE NOT EOF(OutFile)
+  DO
+   BEGIN
+    OutFileKey := GetWord(OutFile);
+    IF OutFileKey = ''
+    THEN
+      BREAK;
+    OutFileValue := GetValue(OutFile);
+    WRITELN(SharedFile, OutFileKey, ' ', OutFileValue)
+   END
+END;
+
+// сливаем дерево и ветку
+PROCEDURE MergeTreeToFile(Root: Tree; VAR SharedFile, OutFile: TEXT); 
+VAR
+  State, OutFileKey: STRING; // W - work, E - EndOfFile
+  OutFileValue: INTEGER;
+  ReadyToPush: BOOLEAN;
+BEGIN
   State := 'W';
+  ReadyToPush:= FALSE;
   REWRITE(SharedFile);  
   RESET(OutFile);
-
   OutFileKey := GetWord(OutFile);
   OutFileValue := GetValue(OutFile);
   IF OutFileKey = ''
-  THEN
-    BEGIN
-    PrintTree(Root, SharedFile);
-    END
+  THEN   
+    PrintTree(Root, SharedFile)    
   ELSE
-    MergeTree(Root, SharedFile, OutFile, State, OutFileKey, OutFileValue);
-  
+    MergeTree(Root, SharedFile, OutFile, State, OutFileKey, OutFileValue, ReadyToPush);  
   IF State <> 'E'
   THEN
-    AppendLostOfOutFile(OutFile, SharedFile, State, OutFileKey, OutFileValue);
+    BEGIN
+      WRITELN(SharedFile, OutFileKey, ' ', OutFileValue);
+      AppendLostOfOutFile(OutFile, SharedFile);    
+    END
 END;
 
-
-PROCEDURE Insert(VAR Ptr:Tree; Data: ValidWord);
+//добавление 1-го элемента в дерево
+PROCEDURE Insert(VAR Ptr:Tree; Data: ValidWord; VAR TreeDepth: INTEGER;VAR SharedFile, OutFile: TEXT);
 VAR
   Overflow: BOOLEAN;
-  ComparisonResult: CHAR;
 BEGIN
   Overflow := FALSE;
   IF NOT Overflow
@@ -218,15 +196,11 @@ BEGIN
             END
           ELSE
             BEGIN              
-              MergeTreeToFile(Root, SharedFile, OutFile);
-              Close(SharedFile);
-              CleanupTree(Root);
-              Reset(SharedFile); // - debug
-              REWRITE(OutFile);  // - debug
-              SwapName();
+              MergeTreeToFile(Ptr, SharedFile, OutFile);
+              CleanupTree(Ptr);
+              SwapFileNames(OutFile, SharedFile);
               TreeDepth := 0;
-              Root := NIL;
-              ReadyToPush:= FALSE;
+              Ptr := NIL;              
             END         
         END
       ELSE
@@ -236,14 +210,15 @@ BEGIN
             Ptr^.Count:= Ptr^.Count + 1
           ELSE IF Ptr^.Key > Data
           THEN
-            Insert(Ptr^.LLink, Data)
+            Insert(Ptr^.LLink, Data, TreeDepth, SharedFile, OutFile)
           ELSE
-            Insert(Ptr^.RLink, Data)
+            Insert(Ptr^.RLink, Data, TreeDepth, SharedFile, OutFile)
         END        
     END
 END;
 
-PROCEDURE PrintSharedForFile(VAR SharedFile: TEXT; VAR OutFile: TEXT);
+//Печать шары в файл
+PROCEDURE PrintDataForFile(VAR SharedFile, OutFile: TEXT);
 VAR
   Ch: CHAR;
 BEGIN
@@ -264,48 +239,41 @@ BEGIN
       END  
 END;
 
-PROCEDURE PrintAllTree();
-VAR
-  Ch: CHAR;
-BEGIN 
-
-  MergeTreeToFile(Root, SharedFile, OutFile);
-  
-  Close(SharedFile);
+PROCEDURE PrintData(Root: Tree; VAR OutputFile, SharedFile, OutFile: Text ); 
+BEGIN
+  MergeTreeToFile(Root, SharedFile, OutFile);  
   CleanupTree(Root);
-  SwapName();
-  RESET(OutFile);
-  PrintSharedForFile(OutFile, OUTPUT);
+  SwapFileNames(OutFile, SharedFile);
+  PrintDataForFile(OutFile, OutputFile);
 END;
 
-
-
-PROCEDURE InsertData(VAR InsertText: Text);
+PROCEDURE GetCountWordInfo(VAR InsertText, OutputFile: Text);
 VAR
   NewWord: ValidWord;
+  TreeDepth: INTEGER;
+  SharedFile: TEXT;
+  OutFile: TEXT;
+  Root: Tree;
 BEGIN
+  Assign(SharedFile,'data/shared.txt');
+  Assign(OutFile,'data/out.txt');
+  REWRITE(SharedFile);
+  REWRITE(OutFile);
+  RESET(OutFile);
+  TreeDepth := 0;
+  Root := NIL;
   WHILE NOT (EOF(InsertText))
   DO
     BEGIN
       NewWord := GetWord(InsertText);
       IF NewWord <> ''
       THEN
-        Insert(Root, NewWord)
-    END  
+        Insert(Root, NewWord, TreeDepth, SharedFile, OutFile)
+    END;
+  PrintData(Root, OutputFile,  SharedFile, OutFile); 
 END;
 
-PROCEDURE PrintData(VAR OutputFile: Text); 
-BEGIN
-  PrintAllTree();
-END;
 
-BEGIN
-  Assign(SharedFile,'data/shared.txt');
-  Assign(OutFile,'data/out.txt');
-  TreeDepth := 0;
-  REWRITE(SharedFile);
-  REWRITE(OutFile);
-  RESET(OutFile);
-  ReadyToPush:= FALSE;  
+BEGIN  
 END.
 

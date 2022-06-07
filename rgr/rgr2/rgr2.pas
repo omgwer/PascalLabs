@@ -3,6 +3,5 @@ USES
   DataHelper; 
 
 BEGIN  
-  InsertData(INPUT);
-  PrintData(OUTPUT);  
-END.      
+  GetCountWordInfo(INPUT, OUTPUT);
+END.                        
