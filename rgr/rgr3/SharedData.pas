@@ -10,7 +10,7 @@ TYPE
   List = ^ListType;
   ListType = RECORD
               Key: ValidWord;
-              
+                              
             END;
   NodeType = RECORD
               Key: ValidWord;
