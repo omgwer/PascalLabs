@@ -7,10 +7,11 @@ CONST
 TYPE
   ValidWord = STRING[MaxWordLength];
   Tree = ^NodeType;
-  List = ^ListType;
-  ListType = RECORD
-              Key: ValidWord;
-                              
+
+  List = ^ListType; // Список для каждой ноды дерева, хранит в себе множество значений с одинаковой основой слова
+  ListType = RECORD 
+              Word: ValidWord;              
+              Next: List;                
             END;
   NodeType = RECORD
               Key: ValidWord;
