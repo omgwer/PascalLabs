@@ -53,7 +53,7 @@ BEGIN
           IF State = 'RV'
           THEN
             BEGIN
-              R0 := Copy(Word,0, i - 1);        
+              R0 := Copy(Word,0, i );        
               RV := Copy(Word, i + 1, WordLength); 
               State := 'R1'
             END;
@@ -91,6 +91,93 @@ BEGIN
     WRITELN(OUTPUT,'R0 = ', R0, ' RV = ', RV, ' R1 = ', R1, ' R2 = ', R2);
 END;
 
+PROCEDURE DeleteNoun(VAR RV: ValidWord);
+VAR
+  TmpFile : ValidWord;
+  WordLength, i, j: INTEGER;
+BEGIN
+  WordLength := LENGTH(RV);
+  FOR i := 4 DOWNTO 1
+  DO
+    BEGIN
+      IF WordLength < i
+      THEN
+        Continue;
+      TmpFile := COPY(RV, WordLength - i + 1, WordLength);  
+      FOR j := 0 TO LENGTH(Noun)
+      DO
+        BEGIN
+          IF TmpFile = Noun[j]
+          THEN
+            RV := COPY(RV, 0, WordLEngth - i);
+            TmpFile := 'F';
+            BREAK;
+        END;
+      IF TmpFile = 'F'
+      THEN
+        BREAK;
+    END;
+END;
+
+PROCEDURE DeleteVerb(VAR RV: ValidWord; VAR State: STRING);
+VAR
+  TmpFile : ValidWord;
+  WordLength, i, j: INTEGER;
+BEGIN
+  WordLength := LENGTH(RV);
+  FOR i := 3 DOWNTO 0
+  DO
+    BEGIN
+      TmpFile := COPY(RV, WordLength - i, WordLength); // последовательно сравниваем окончания, нужно найти самое длинное подходящее
+      //IF Length(TmpFile < i)  может быть кейс что длины rv НЕ ХВАТИТ
+      FOR j := 0 TO LENGTH(VerbGroupSecond)
+      DO
+        BEGIN
+          IF TmpFile = VerbGroupSecond[j]
+          THEN
+            BEGIN
+              State := 'F';
+              RV := COPY(RV, 0, WordLength - i - 1);
+              BREAK
+            END;            
+        END;
+      IF State = 'F'
+      THEN
+        BREAK;
+      FOR j := 0 TO LENGTH(VerbGroupFirst)
+      DO
+        BEGIN
+          IF TmpFile = VerbGroupFirst[j]
+          THEN
+            BEGIN
+              IF Length(RV) > i
+              THEN
+                BEGIN
+                  TmpFile := RV[WordLength - i]; // записываем букву которая предшествует werbGroup 1
+                  IF (TmpFile = 'я') OR (TmpFile = 'я')  // буква предшествующая окончанию, удовлетворяет условию
+                  THEN
+                    BEGIN
+                      State := 'F';
+                      RV := COPY(RV, 0, WordLength - i - 1);
+                      BREAK
+                    END;
+                END
+              ELSE
+                BEGIN
+                  TmpFile := R0[Length(R0)];
+                  IF (TmpFile = 'а') OR (TmpFile = 'я')
+                  THEN
+                    BEGIN
+                      State := 'F';
+                      RV := COPY(RV, 0, WordLength - i - 1);
+                      BREAK
+                    END;
+                END;
+            END;         
+        END; 
+    END;
+END;
+
 PROCEDURE DeleteReflexive(VAR RV: ValidWord);
 VAR
   TmpFile : ValidWord;
@@ -103,20 +190,120 @@ BEGIN
     RV := Copy(RV, 0, WordLength - 2);
 END;
 
-PROCEDURE DeleteAdjectival(VAR RV: ValidWord);
+PROCEDURE DeleteParticiple(VAR RV: ValidWord);
+VAR
+  TmpFile : ValidWord;
+  WordLength, TmpInt, i: INTEGER;
+  State : STRING;
 BEGIN
+  State := 'W';
+  WordLength := LENGTH(RV);
+  TmpFile := COPY(RV, WordLength - 2, WordLength); // берем 3 элемента с конца
+  IF LENGTH(RV) >= 3
+  THEN
+    BEGIN
+      FOR i := 0 TO LENGTH(ParticipleGroupSecond)
+      DO
+        BEGIN
+          IF TmpFile = ParticipleGroupSecond[i]
+          THEN
+            BEGIN
+              RV := COPY(RV, 0, WordLength - 3);
+              State := 'F';
+              BREAK;
+            END
+        END
+    END;
+  IF State <> 'F'
+  THEN
+    BEGIN
+      TmpFile := COPY(RV, WordLength - 1, WordLength); // берем 2 элемента с конца       
+      IF LENGTH(RV) >= 2
+      THEN
+        BEGIN
+          FOR i := 0 TO LENGTH(ParticipleGroupFirst)
+          DO
+            BEGIN
+              IF TmpFile =  ParticipleGroupFirst[i]
+              THEN
+                BEGIN
+                  IF LENGTH(RV) = 2
+                  THEN
+                    BEGIN                
+                      TmpInt := LENGTH(R0);
+                      WRITELN(OUTPUT, 'TestTMP = ', TmpFile);
+                      IF (R0[TmpInt] = 'а') OR (R0[TmpInt] = 'я')
+                      THEN
+                        BEGIN 
+                          RV := COPY(RV, 0, WordLength - 2)
+                        END;
+                    END
+                  ELSE                
+                    BEGIN
+                      IF (RV[WordLength - 2] = 'а') OR (RV[WordLength - 2] = 'я')
+                      THEN
+                        BEGIN 
+                          RV := COPY(RV, 0, WordLength - 2)
+                        END;
+                    END;
+                END;
+            END;
+        END;  
+    END;
 END;
+
+PROCEDURE DeleteAdjective(VAR RV: ValidWord; VAR State: STRING);
+VAR
+  TmpFile : ValidWord;
+  WordLength, i: INTEGER;
+BEGIN
+  WordLength := LENGTH(RV);
+  TmpFile := Copy(RV, WordLength - 2, WordLength); // берем 3 элемента с конца
+  IF LENGTH(TmpFile) >= 3
+  THEN
+    BEGIN
+      FOR i := 0 TO LENGTH(Adjective)
+      DO
+        BEGIN
+          IF TmpFile = Adjective[i]
+          THEN
+            BEGIN
+              RV := Copy(RV, 0, WordLength - 3);
+              State := 'F';
+              BREAK
+            END
+        END;
+    END;
+    TmpFile := Copy(RV, WordLength - 1, WordLength); // берем 2 элемента с конца
+    IF LENGTH(TmpFile) >= 2
+    THEN
+      BEGIN
+      FOR i := 0 TO LENGTH(Adjective)
+      DO
+        BEGIN
+          IF TmpFile = Adjective[i]
+          THEN
+            BEGIN
+              RV := Copy(RV, 0 , WordLength - 2);
+              State := 'F';
+              BREAK
+            END
+        END;
+      END;
+    DeleteParticiple(RV);   
+END;
+
 
 // Первый шаг - найти perfective gerund
 PROCEDURE DeletePerfectiveGerund(VAR RV: ValidWord);
 VAR  
-  State : STRING; // S - ищем perfectiveGerund R - если не нашли, удаляем Reflexive, F - finish
+  State : STRING; // S - search  F - finish
   TmpFile: ValidWord;
   i, j, WordLength: INTEGER;  
 BEGIN
   State := 'S';
   WordLength := LENGTH(RV);
-  FOR i:= WordLength DOWNTO 0
+  FOR i:= 0 TO 25
   DO
     BEGIN
       TmpFile := Copy(RV, i, WordLength); // записываем окончание
@@ -144,12 +331,20 @@ BEGIN
               END 
         END
     END;
-    IF State = 'S'  
+    IF State <> 'F'  
     THEN
       BEGIN
-        DeleteReflexive(RV);        
-        DeleteAdjectival(); //
-        DeleteParticiple(); //
+        DeleteReflexive(RV);
+        DeleteAdjective(RV, State);
+        IF State <> 'F'
+        THEN
+          DeleteVerb(RV, State);
+        // IF State <> 'F'
+        // THEN
+        //   DeleteNoun(RV);  
+
+        
+        
       END
 
 END;
@@ -160,7 +355,7 @@ VAR
 BEGIN
   InitData(NewWord);
   DeletePerfectiveGerund(RV);
-  WRITELN(OUTPUT, RV);
+  WRITELN(OUTPUT,'RV after delete = ', RV);
 
   GetRootOfWord := NewWord;
 END;

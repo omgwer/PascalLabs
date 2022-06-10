@@ -9,5 +9,8 @@ BEGIN
   // NewRootWord := GetRootOFWord('прогулявшись');
   // NewRootWord := GetRootOFWord('подсуетившись');
   // NewRootWord := GetRootOFWord('противоестественном');
-  NewRootWord := GetRootOFWord('мыться');
+  //NewRootWord := GetRootOFWord('мыться');
+  NewRootWord := GetRootOFWord('бегавшая');
+  NewRootWord := GetRootOFWord('перепила');
+  NewRootWord := GetRootOFWord('перепейте');
 END.                              
