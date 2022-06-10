@@ -1,57 +1,69 @@
 Unit ListHelper;
 
 INTERFACE
+USES
+  SharedData;
 
-Insert(newWord: ValidWord);
-GetAllWords();
+//Добавить элемент в лист
+PROCEDURE InsertToList(VAR FirstPtr: List; Word: ValidWord; Count: INTEGER);
+//Печатает весь лист по указателю на лист
+PROCEDURE PrintList(FirstPtr: List; VAR OutFile: TEXT);
+// Создает указатель на новый лист
+FUNCTION InitNewList() : List;
 
 IMPLEMENTATION
-// ДОПИСАТЬ ЛИСТ
-PROGRAM InsertSort2(INPUT, OUTPUT);
-TYPE 
-  NodePtr = ^Node;
-  Node = RECORD
-           Next: NodePtr;
-           Key: CHAR
-         END;
 VAR
-  FirstPtr, NewPtr, Curr, Prev: NodePtr;
+  NewPtr, Curr, Prev: List;
   Found: BOOLEAN;
-BEGIN {InsertSort2}
-  FirstPtr := NIL;
-  WHILE NOT EOLN(INPUT)
+  Count: INTEGER;
+
+PROCEDURE InsertToList(VAR FirstPtr: List; Word: ValidWord; Count: INTEGER);  
+BEGIN
+  NEW(NewPtr);
+  NewPtr^.Word := Word;
+  NewPtr^.Count := Count;
+  Prev := NIL;
+  Curr := FirstPtr;
+  Found := FALSE;
+  WHILE (Curr <> NIL) AND NOT Found
   DO
-    BEGIN
-      NEW(NewPtr);
-      READ(NewPtr^.Key);
-      Prev := NIL;
-      Curr := FirstPtr;
-      {2.1.1 Найдем значение Prev и Curr, такие что Prev^.Key <= NewPtr^.Key <= Curr^.Key}
-      Found := FALSE;
-      WHILE (Curr <> NIL) AND NOT Found
-      DO
-        IF NewPtr^.Key > Curr^.Key
-        THEN
-          BEGIN
-            Prev := Curr;
-            Curr := Curr^.Next
-          END
-        ELSE
-          Found := TRUE;
-      NewPtr^.Next := Curr;
-      IF Prev = NIL 
-      THEN
-        FirstPtr := NewPtr
-      ELSE
-        Prev^.Next := NewPtr
-    END;
+    IF NewPtr^.Word > Curr^.Word
+    THEN
+      BEGIN
+        Prev := Curr;
+        Curr := Curr^.Next
+      END
+    ELSE
+      Found := TRUE;
+  NewPtr^.Next := Curr;
+  IF Prev = NIL 
+  THEN
+    FirstPtr := NewPtr
+  ELSE
+    Prev^.Next := NewPtr 
+END;
+
+PROCEDURE PrintList(FirstPtr: List; VAR OutFile: TEXT);
+BEGIN
   NewPtr := FirstPtr;
+  Count := 0;
   WHILE NewPtr <> NIL
   DO
     BEGIN
-      WRITE(NewPtr^.Key);
-      NewPtr := NewPtr^.Next
-    END
-END.  {InsertSort2}
+      WRITE(OutFile, NewPtr^.Word);
+      Count := NewPtr^.Count + Count;
+      NewPtr := NewPtr^.Next;
+      IF NewPtr <> NIL
+      THEN
+        WRITE(OutFile, ', ')
+    END;
+  WRITELN(OutFile,' : ', Count);  
+END; 
 
+FUNCTION InitNewList() : List;
+BEGIN
+  InitNewList := NIL;
+END;  
 
+BEGIN  
+END.

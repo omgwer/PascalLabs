@@ -10,9 +10,7 @@ PROCEDURE PrintStackForFile(VAR SharedFile: TEXT);
 IMPLEMENTATION
 TYPE
   NodePtr = ^Node;
-  Node = RECORD
-           // Key: STRING;
-           //Count: INTEGER;
+  Node = RECORD           
            Next: NodePtr;
            Ptr: Tree;
          END;
@@ -21,9 +19,7 @@ VAR
 
 PROCEDURE Push(Ptr: Tree);
 BEGIN
-  NEW(NewPtr);
-  // NewPtr^.Key := Key;
-  // NewPtr^.Count := Count;  
+  NEW(NewPtr);   
   NewPtr^.Ptr := Ptr; 
   Curr := FirstPtr;     
   NewPtr^.Next := Curr;
