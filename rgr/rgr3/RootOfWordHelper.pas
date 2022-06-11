@@ -86,9 +86,100 @@ BEGIN
                 END                
             END  
         END
+    END;    
+END;
+
+PROCEDURE FinishDelete(VAR RV: ValidWord);
+VAR
+  TmpFile : ValidWord;
+  WordLength: INTEGER;
+  State : STRING; // 'W', 'F' - work - finish
+BEGIN
+  WordLength:= LENGTH(RV);
+  State := 'W';
+  IF RV[WordLength] = 'ь'
+  THEN
+    BEGIN
+      RV := COPY(RV, 0 , WordLength - 1);
+      State := 'F'
     END;
 
-    WRITELN(OUTPUT,'R0 = ', R0, ' RV = ', RV, ' R1 = ', R1, ' R2 = ', R2);
+  IF State <> 'F'
+  THEN
+    BEGIN
+      IF WordLength >= 3
+      THEN
+        BEGIN
+          TmpFile := COPY(RV, WordLength - 2, WordLength);
+          IF TmpFile = 'ейш'
+          THEN
+            RV := COPY(RV, 0, WordLength - 2)
+          ELSE IF WordLength >= 4
+          THEN
+            BEGIN
+              TmpFile := COPY(RV, WordLength - 3, WordLength);
+              IF TmpFile = 'ейше'
+              THEN
+                RV := COPY(RV, 0, WordLength - 3);
+            END;
+        END;      
+    END;  
+
+
+
+  WordLength := LENGTH(RV);  
+  IF State <> 'F'  // удаление сдвоенного 'нн'
+  THEN
+    BEGIN
+      IF WordLength = 1
+      THEN
+        BEGIN
+          IF RV[WordLength] = 'н'
+          THEN
+            BEGIN
+              IF R0[LENGTH(R0)] = 'н'  // длина RV - 1 и предыдущая буква = "н"
+              THEN
+                RV := '';
+                State := 'F'  
+            END;
+        END;
+      IF WordLength >= 2
+      THEN
+        BEGIN
+          TmpFile := COPY(RV, WordLength - 2, WordLength); // удаление "нн" берем 2 символа с конца RV
+          IF TmpFile = 'нн'
+          THEN
+            BEGIN
+              RV := COPY(RV, 0, WordLength - 1);  // удаляем последний символ
+              State := 'F'
+            END;
+        END;
+    END;
+END;
+
+PROCEDURE DeleteDerivational(VAR RV, R2: ValidWord);
+VAR
+  TmpFile : ValidWord;
+  WordLength, R2Length: INTEGER;
+BEGIN
+  WordLength := LENGTH(RV);
+  R2Length := LENGTH(R2);
+  IF LENGTH(R2) >= 3
+  THEN
+    BEGIN
+      TmpFile := Copy(R2, R2Length - 2, R2Length);
+      IF TmpFile = Derivational[0]
+      THEN
+        RV := Copy(RV, 0, WordLength - 2);      
+    END;
+  IF LENGTH(R2) >= 4
+  THEN
+    BEGIN
+      TmpFile := Copy(R2, R2Length - 3, R2Length);
+      IF TmpFIle = Derivational[1]
+      THEN
+        RV := Copy(RV, 0, WordLength - 3)
+    END;
 END;
 
 PROCEDURE DeleteNoun(VAR RV: ValidWord);
@@ -339,14 +430,10 @@ BEGIN
         IF State <> 'F'
         THEN
           DeleteVerb(RV, State);
-        // IF State <> 'F'
-        // THEN
-        //   DeleteNoun(RV);  
-
-        
-        
+        IF State <> 'F'
+        THEN
+          DeleteNoun(RV);          
       END
-
 END;
 
 FUNCTION GetRootOfWord(NewWord: ValidWord): ValidWord;
@@ -354,9 +441,18 @@ VAR
   TmpWord: ValidWord;
 BEGIN
   InitData(NewWord);
-  DeletePerfectiveGerund(RV);
-  WRITELN(OUTPUT,'RV after delete = ', RV);
+  WRITELN(OUTPUT,'FirstInitData => R0 = ', R0, ' RV = ', RV, ' R1 = ', R1, ' R2 = ', R2);
+  DeletePerfectiveGerund(RV);  // шаг 1
+  IF RV[LENGTH(RV)] = 'и'      // шаг 2
+  THEN
+    RV := COPY(RV, 0, LENGTH(RV) - 1);    
+  InitData(Concat(R0, RV));  // повторная инициализация, необходимо получить актуальную R1, R2
+  WRITELN(OUTPUT,'InitData After Step 2 => R0 = ', R0, ' RV = ', RV, ' R1 = ', R1, ' R2 = ', R2);
+  DeleteDerivational(RV, R2); // шаг 3
+  FinishDelete(RV); // шаг 4
 
+  WRITELN(OUTPUT,'RV after delete = ', RV);
+  WRITELN(OUTPUT, 'RootOfWord = ', Concat(R0, RV));
   GetRootOfWord := NewWord;
 END;
 
