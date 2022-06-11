@@ -322,7 +322,6 @@ BEGIN
                   THEN
                     BEGIN                
                       TmpInt := LENGTH(R0);
-                      WRITELN(OUTPUT, 'TestTMP = ', TmpFile);
                       IF (R0[TmpInt] = 'а') OR (R0[TmpInt] = 'я')
                       THEN
                         BEGIN 
@@ -441,19 +440,19 @@ VAR
   TmpWord: ValidWord;
 BEGIN
   InitData(NewWord);
-  WRITELN(OUTPUT,'FirstInitData => R0 = ', R0, ' RV = ', RV, ' R1 = ', R1, ' R2 = ', R2);
+  //WRITELN(OUTPUT,'FirstInitData => R0 = ', R0, ' RV = ', RV, ' R1 = ', R1, ' R2 = ', R2);
   DeletePerfectiveGerund(RV);  // шаг 1
   IF RV[LENGTH(RV)] = 'и'      // шаг 2
   THEN
     RV := COPY(RV, 0, LENGTH(RV) - 1);    
   InitData(Concat(R0, RV));  // повторная инициализация, необходимо получить актуальную R1, R2
-  WRITELN(OUTPUT,'InitData After Step 2 => R0 = ', R0, ' RV = ', RV, ' R1 = ', R1, ' R2 = ', R2);
+  //WRITELN(OUTPUT,'InitData After Step 2 => R0 = ', R0, ' RV = ', RV, ' R1 = ', R1, ' R2 = ', R2);
   DeleteDerivational(RV, R2); // шаг 3
   FinishDelete(RV); // шаг 4
 
-  WRITELN(OUTPUT,'RV after delete = ', RV);
-  WRITELN(OUTPUT, 'RootOfWord = ', Concat(R0, RV));
-  GetRootOfWord := NewWord;
+  //WRITELN(OUTPUT,'RV after delete = ', RV);
+  //WRITELN(OUTPUT, 'RootOfWord = ', Concat(R0, RV));
+  GetRootOfWord := Concat(R0, RV);
 END;
 
 

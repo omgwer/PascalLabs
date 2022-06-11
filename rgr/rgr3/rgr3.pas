@@ -1,10 +1,10 @@
 PROGRAM CountWords(INPUT, OUTPUT);
 USES
-  SharedData, RootOfWordHelper; 
+  SharedData, RootOfWordHelper, DataHelper; 
 VAR
   NewRootWord: ValidWord;
 BEGIN  
-  //GetCountWordInfo(INPUT, OUTPUT);
+  GetCountWordInfo(INPUT, OUTPUT);
   //NewRootWord := GetRootOFWord('прогулявшись');
   //NewRootWord := GetRootOFWord('противоестественном');
   // NewRootWord := GetRootOFWord('мыться');
