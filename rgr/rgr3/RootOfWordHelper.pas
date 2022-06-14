@@ -125,8 +125,6 @@ BEGIN
         END;      
     END;  
 
-
-
   WordLength := LENGTH(RV);  
   IF State <> 'F'  // удаление сдвоенного 'нн'
   THEN
